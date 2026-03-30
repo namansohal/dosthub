@@ -1,10 +1,1435 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>DostHub</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EvalPro — Examination Evaluation Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+
+
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #161a22;
+  --surface2: #1e2430;
+  --surface3: #252d3d;
+  --border: #2a3347;
+  --border2: #3a4a66;
+  --accent: #4f9eff;
+  --accent2: #7b5cf0;
+  --green: #22c55e;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --text: #e8edf5;
+  --text2: #8a9ab8;
+  --text3: #5a6a8a;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --radius: 12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+/* ── TOASTS ── */
+#toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+.toast { padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; max-width: 340px; animation: slideIn .3s ease; border-left: 4px solid; }
+.toast.success { background: #0f2a1a; border-color: var(--green); color: var(--green); }
+.toast.error   { background: #2a0f0f; border-color: var(--red);   color: var(--red); }
+.toast.info    { background: #0f1a2a; border-color: var(--accent); color: var(--accent); }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── LANDING ── */
+#screen-landing { align-items: center; justify-content: center; background: radial-gradient(ellipse at 60% 20%, #1a2540 0%, var(--bg) 60%); }
+.landing-hero { text-align: center; padding: 40px 20px; }
+.landing-logo { font-family: 'Playfair Display', serif; font-size: 42px; color: var(--text); margin-bottom: 6px; }
+.landing-logo span { color: var(--accent); }
+.landing-sub { color: var(--text2); font-size: 15px; margin-bottom: 52px; }
+.role-cards { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+.role-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 36px 32px; width: 210px; cursor: pointer; transition: all .25s; text-align: center; }
+.role-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(79,158,255,.15); }
+.role-card .icon { font-size: 36px; margin-bottom: 14px; }
+.role-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.role-card p  { font-size: 12px; color: var(--text2); }
+.he-card { border-color: var(--accent2); }
+.he-card:hover { border-color: var(--accent2); box-shadow: 0 20px 40px rgba(123,92,240,.2); }
+
+/* ── MODALS / AUTH PANELS ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 36px; width: 100%; max-width: 460px; position: relative; max-height: 90vh; overflow-y: auto; }
+.modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.modal .sub { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
+.modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--text2); font-size: 20px; cursor: pointer; }
+.modal-tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+.modal-tab { padding: 8px 20px; font-size: 14px; font-weight: 500; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; }
+.modal-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── FORMS ── */
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; letter-spacing: .5px; text-transform: uppercase; }
+.field input, .field select, .field textarea { width: 100%; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: inherit; font-size: 14px; outline: none; transition: border-color .2s; }
+.field input:focus, .field select:focus { border-color: var(--accent); }
+.field select option { background: var(--surface2); }
+.btn { padding: 11px 22px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; border: none; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { background: #6faaff; }
+.btn-success { background: var(--green); color: #000; }
+.btn-danger  { background: var(--red);   color: #fff; }
+.btn-ghost   { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--accent); }
+.btn-full { width: 100%; justify-content: center; }
+.btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 6px; }
+
+/* ── WAITING SCREEN ── */
+#screen-waiting { align-items: center; justify-content: center; background: var(--bg); }
+.waiting-box { text-align: center; padding: 60px 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; max-width: 420px; }
+.waiting-box .spin { font-size: 56px; animation: spin 3s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.waiting-box h2 { font-size: 22px; margin: 20px 0 10px; }
+.waiting-box p { color: var(--text2); font-size: 14px; line-height: 1.6; }
+
+/* ── DASHBOARD LAYOUT ── */
+.dashboard { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; flex-shrink: 0; }
+.sidebar-logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sidebar-logo .name { font-family: 'Playfair Display', serif; font-size: 20px; }
+.sidebar-logo .role-badge { font-size: 11px; color: var(--accent); background: rgba(79,158,255,.1); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 4px; font-weight: 600; }
+.nav-item { padding: 10px 20px; display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text2); cursor: pointer; transition: all .2s; border-left: 3px solid transparent; }
+.nav-item:hover { color: var(--text); background: var(--surface2); }
+.nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(79,158,255,.06); }
+.nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-badge { margin-left: auto; background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+.sidebar-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border); }
+.user-info { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+.user-info .uname { font-size: 13px; font-weight: 600; }
+.user-info .uemail { font-size: 11px; color: var(--text3); }
+
+.main-content { flex: 1; padding: 32px; overflow-y: auto; }
+.page { display: none; }
+.page.active { display: block; }
+.page-header { margin-bottom: 28px; }
+.page-header h1 { font-size: 26px; font-weight: 700; }
+.page-header p { color: var(--text2); font-size: 14px; margin-top: 4px; }
+
+/* ── CARDS ── */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.stat-card .stat-val { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+.stat-card .stat-label { font-size: 12px; color: var(--text2); font-weight: 500; }
+
+/* ── TABLES ── */
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .6px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+
+/* ── STATUS BADGES ── */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge-pending  { background: rgba(245,158,11,.12); color: var(--amber); }
+.badge-approved { background: rgba(34,197,94,.12); color: var(--green); }
+.badge-rejected { background: rgba(239,68,68,.12); color: var(--red); }
+.badge-completed { background: rgba(34,197,94,.12); color: var(--green); }
+.badge-assigned  { background: rgba(79,158,255,.12); color: var(--accent); }
+.badge-finalised { background: rgba(34,197,94,.2); color: var(--green); }
+
+/* ── PDF VIEWER ── */
+#pdf-viewer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 2000; flex-direction: column; }
+#pdf-viewer-overlay.open { display: flex; }
+.pdf-viewer-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.pdf-viewer-header h3 { font-size: 15px; flex: 1; }
+.pdf-viewer-body { flex: 1; display: flex; overflow: hidden; }
+.pdf-panel { flex: 1; overflow-y: auto; background: #1a1a1a; position: relative; }
+.pdf-canvas-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 20px; }
+.pdf-page-wrap { position: relative; display: inline-block; }
+.pdf-page-wrap canvas { display: block; max-width: 100%; }
+
+/* Annotation layer */
+.annotation-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
+.annotation-layer.disabled { pointer-events: none; cursor: default; }
+
+/* Marking sidebar */
+.marking-sidebar { width: 340px; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+.marking-sidebar .ms-header { padding: 16px 20px; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 14px; }
+.marking-sidebar .ms-body { padding: 16px 20px; flex: 1; overflow-y: auto; }
+.total-box { background: var(--surface2); border-radius: 8px; padding: 14px 16px; text-align: center; margin-bottom: 16px; border: 1px solid var(--border); }
+.total-box .total-val { font-size: 36px; font-weight: 700; color: var(--green); }
+.total-box .total-max { font-size: 13px; color: var(--text2); }
+.q-section { margin-bottom: 14px; }
+.q-header { font-size: 12px; font-weight: 700; color: var(--text2); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+.q-sum { font-size: 13px; font-weight: 700; color: var(--accent); }
+.step-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.step-label { font-size: 11px; color: var(--text3); width: 60px; font-family: 'DM Mono', monospace; }
+.step-input { width: 64px; padding: 5px 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 13px; text-align: center; }
+.step-input:focus { outline: none; border-color: var(--green); }
+.step-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; color: #000; font-weight: 700; flex-shrink: 0; }
+
+/* annotation toolbar */
+.ann-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ann-tool { padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 12px; cursor: pointer; transition: all .15s; }
+.ann-tool.active { border-color: var(--accent); color: var(--accent); background: rgba(79,158,255,.1); }
+.color-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.color-dot.selected { border-color: #fff; }
+
+/* ── SCRIPT CARDS ── */
+.script-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+.script-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.script-title { font-size: 15px; font-weight: 700; }
+.script-meta { font-size: 12px; color: var(--text2); margin-top: 3px; }
+.script-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+/* Upload zone */
+.upload-zone { border: 2px dashed var(--border); border-radius: 8px; padding: 24px; text-align: center; cursor: pointer; transition: all .2s; color: var(--text2); }
+.upload-zone:hover { border-color: var(--accent); color: var(--accent); }
+.upload-zone.has-file { border-color: var(--green); color: var(--green); background: rgba(34,197,94,.05); }
+
+/* Approval cards */
+.approval-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+.approval-card .info { flex: 1; }
+.approval-card .aname { font-size: 14px; font-weight: 600; }
+.approval-card .ameta { font-size: 12px; color: var(--text2); margin-top: 3px; }
+
+/* captcha */
+.captcha-wrap { display: flex; justify-content: center; margin: 10px 0; }
+
+/* tabs in dashboard */
+.d-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.d-tab { padding: 10px 20px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; }
+.d-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Remarks */
+.remarks-field textarea { resize: vertical; min-height: 70px; }
+
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.text-green { color: var(--green); }
+.text-red { color: var(--red); }
+.text-amber { color: var(--amber); }
+.text-accent { color: var(--accent); }
+.mt-4 { margin-top: 4px; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.flex { display: flex; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text2); }
+.empty-state .ei { font-size: 48px; margin-bottom: 16px; }
+.empty-state p { font-size: 14px; }
+
+/* Finalised overlay */
+.finalised-banner { background: rgba(34,197,94,.1); border: 1px solid var(--green); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; color: var(--green); font-weight: 600; margin-bottom: 16px; font-size: 14px; }
+
+/* Custom CAPTCHA */
+.captcha-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; margin: 12px 0; }
+.captcha-box .captcha-q { font-size: 15px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--accent); white-space: nowrap; }
+.captcha-box input { width: 70px; padding: 6px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 14px; text-align: center; }
+.captcha-box input:focus { outline: none; border-color: var(--accent); }
+.captcha-refresh { background: none; border: none; color: var(--text2); cursor: pointer; font-size: 16px; padding: 4px; }
+.captcha-refresh:hover { color: var(--accent); }
+</style>
 </head>
-<body style="background:black;color:white;text-align:center;padding-top:100px;font-family:Arial;">
-  <h1>Welcome to DostHub 😈</h1>
-  <p>Friends Only. No Outsiders.</p>
+<body>
+
+<div id="toast-container"></div>
+
+<!-- ══════════ LANDING ══════════ -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-hero">
+    <div class="landing-logo">Eval<span>Pro</span></div>
+    <div class="landing-sub">Secure Digital Examination Evaluation System</div>
+    <div class="role-cards">
+      <div class="role-card he-card" onclick="openHEModal()">
+        <div class="icon">🏛️</div>
+        <h3>Head Examiner</h3>
+        <p>Manage scripts, approve examiners, oversee evaluation</p>
+      </div>
+      <div class="role-card" onclick="openExaminerModal('login')">
+        <div class="icon">🔐</div>
+        <h3>Examiner Login</h3>
+        <p>Login to your examiner account</p>
+      </div>
+      <div class="role-card" onclick="openExaminerModal('signup')">
+        <div class="icon">📝</div>
+        <h3>Examiner Sign Up</h3>
+        <p>Register as a new examiner</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ WAITING SCREEN ══════════ -->
+<div id="screen-waiting" class="screen">
+  <div class="waiting-box">
+    <div class="spin">⏳</div>
+    <h2>Registration Successful!</h2>
+    <p>Your account is pending approval by the Head Examiner.<br>You will be able to login once approved.</p>
+    <div class="mt-16">
+      <button class="btn btn-ghost btn-full" onclick="logout()">← Back to Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ HE MODAL ══════════ -->
+<div id="modal-he" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-he')">✕</button>
+    <h2>🏛️ Head Examiner</h2>
+    <p class="sub">Secure access to examination management</p>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="he-email" autocomplete="off" placeholder="Enter HE email">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="he-pass" autocomplete="off" placeholder="Enter password">
+    </div>
+    <div class="captcha-box">
+      <span class="captcha-q" id="he-captcha-q">3 + 4 = ?</span>
+      <input type="number" id="he-captcha-ans" placeholder="Answer">
+      <button class="captcha-refresh" onclick="refreshCaptcha('he')" title="New question">🔄</button>
+    </div>
+    <button class="btn btn-primary btn-full mt-12" onclick="heLogin()">🔑 Login as Head Examiner</button>
+  </div>
+</div>
+
+<!-- ══════════ EXAMINER MODAL ══════════ -->
+<div id="modal-examiner" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-examiner')">✕</button>
+    <h2>👤 Examiner Portal</h2>
+    <p class="sub">Login or register your examiner account</p>
+    <div class="modal-tabs">
+      <div class="modal-tab active" onclick="switchTab('ex','login')">Login</div>
+      <div class="modal-tab" onclick="switchTab('ex','signup')">Sign Up</div>
+    </div>
+    <!-- Login Tab -->
+    <div class="tab-content active" id="ex-tab-login">
+      <div class="field"><label>Email</label><input type="email" id="ex-login-email"></div>
+      <div class="field"><label>Password</label><input type="password" id="ex-login-pass"></div>
+      <div class="captcha-box">
+        <span class="captcha-q" id="exl-captcha-q">5 + 2 = ?</span>
+        <input type="number" id="exl-captcha-ans" placeholder="Answer">
+        <button class="captcha-refresh" onclick="refreshCaptcha('exl')" title="New question">🔄</button>
+      </div>
+      <button class="btn btn-primary btn-full mt-12" onclick="examinerLogin()">Login</button>
+    </div>
+    <!-- Signup Tab -->
+    <div class="tab-content" id="ex-tab-signup">
+      <div class="field"><label>Full Name</label><input type="text" id="ex-name"></div>
+      <div class="field"><label>Email</label><input type="email" id="ex-email"></div>
+      <div class="field"><label>Password</label><input type="password" id="ex-pass"></div>
+      <div class="field"><label>Subject</label><input type="text" id="ex-subject" placeholder="e.g. Mathematics"></div>
+      <div class="field"><label>Employee Code</label><input type="text" id="ex-empcode" placeholder="e.g. EMP2024001"></div>
+      <div class="captcha-box">
+        <span class="captcha-q" id="exs-captcha-q">6 + 3 = ?</span>
+        <input type="number" id="exs-captcha-ans" placeholder="Answer">
+        <button class="captcha-refresh" onclick="refreshCaptcha('exs')" title="New question">🔄</button>
+      </div>
+      <button class="btn btn-primary btn-full mt-12" onclick="examinerSignup()">📨 Register Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ HE DASHBOARD ══════════ -->
+<div id="screen-he" class="screen">
+  <div class="dashboard">
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <div class="name">EvalPro</div>
+        <div class="role-badge">HEAD EXAMINER</div>
+      </div>
+      <div class="nav-item active" onclick="hePage('overview')" data-page="overview"><span class="icon">📊</span> Overview</div>
+      <div class="nav-item" onclick="hePage('approvals')" data-page="approvals"><span class="icon">🔔</span> Approvals <span class="nav-badge" id="he-approval-badge" style="display:none">0</span></div>
+      <div class="nav-item" onclick="hePage('scripts')" data-page="scripts"><span class="icon">📄</span> Scripts</div>
+      <div class="nav-item" onclick="hePage('examiners')" data-page="examiners"><span class="icon">👥</span> Examiners</div>
+      <div class="nav-item" onclick="hePage('appoint')" data-page="appoint"><span class="icon">➕</span> Appoint HE</div>
+      <div class="sidebar-footer">
+        <div class="user-info"><div class="avatar">HE</div><div><div class="uname" id="he-uname">Head Examiner</div><div class="uemail" id="he-uemail"></div></div></div>
+        <button class="btn btn-ghost btn-full btn-sm" onclick="logout()">↩ Logout</button>
+      </div>
+    </div>
+    <div class="main-content">
+      <!-- Overview -->
+      <div class="page active" id="he-page-overview">
+        <div class="page-header"><h1>Overview</h1><p>Examination management dashboard</p></div>
+        <div class="grid-3" id="he-stats"></div>
+        <div class="mt-16" id="he-recent-scripts"></div>
+      </div>
+      <!-- Approvals -->
+      <div class="page" id="he-page-approvals">
+        <div class="page-header flex-between"><div><h1>Examiner Approvals</h1><p>Review and approve pending examiner registrations</p></div></div>
+        <div id="approvals-list"></div>
+      </div>
+      <!-- Scripts -->
+      <div class="page" id="he-page-scripts">
+        <div class="page-header flex-between">
+          <div><h1>Scripts</h1><p>Manage and assign answer scripts</p></div>
+          <button class="btn btn-primary" onclick="openAddScript()">+ Add Script</button>
+        </div>
+        <div id="he-scripts-list"></div>
+      </div>
+      <!-- Examiners -->
+      <div class="page" id="he-page-examiners">
+        <div class="page-header"><h1>Examiners</h1><p>All registered examiners</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Emp Code</th><th>Status</th><th>Actions</th></tr></thead><tbody id="examiners-table"></tbody></table></div>
+      </div>
+      <!-- Appoint HE -->
+      <div class="page" id="he-page-appoint">
+        <div class="page-header"><h1>Appoint Head Examiner</h1><p>Add another Head Examiner to the system</p></div>
+        <div class="card" style="max-width:440px">
+          <div class="field"><label>Full Name</label><input type="text" id="appoint-name"></div>
+          <div class="field"><label>Email</label><input type="email" id="appoint-email"></div>
+          <div class="field"><label>Password</label><input type="password" id="appoint-pass"></div>
+          <button class="btn btn-primary mt-12" onclick="appointHE()">➕ Appoint as HE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ EXAMINER DASHBOARD ══════════ -->
+<div id="screen-examiner" class="screen">
+  <div class="dashboard">
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <div class="name">EvalPro</div>
+        <div class="role-badge">EXAMINER</div>
+      </div>
+      <div class="nav-item active" onclick="exPage('scripts')" data-page="scripts"><span class="icon">📄</span> My Scripts</div>
+      <div class="nav-item" onclick="exPage('completed')" data-page="completed"><span class="icon">✅</span> Completed</div>
+      <div class="sidebar-footer">
+        <div class="user-info"><div class="avatar" id="ex-avatar">EX</div><div><div class="uname" id="ex-uname">Examiner</div><div class="uemail" id="ex-uemail"></div></div></div>
+        <button class="btn btn-ghost btn-full btn-sm" onclick="logout()">↩ Logout</button>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="page active" id="ex-page-scripts">
+        <div class="page-header"><h1>Assigned Scripts</h1><p>Scripts assigned to you for evaluation</p></div>
+        <div id="ex-scripts-list"></div>
+      </div>
+      <div class="page" id="ex-page-completed">
+        <div class="page-header"><h1>Completed Scripts</h1><p>Scripts you have evaluated</p></div>
+        <div id="ex-completed-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ADD SCRIPT MODAL ══════════ -->
+<div id="modal-add-script" class="modal-overlay">
+  <div class="modal" style="max-width:580px">
+    <button class="modal-close" onclick="closeModal('modal-add-script')">✕</button>
+    <h2>📄 Add New Script</h2>
+    <p class="sub">Upload answer book, question paper and marking scheme</p>
+    <div class="grid-2">
+      <div class="field"><label>Script ID</label><input type="text" id="s-id" placeholder="e.g. SCRIPT001"></div>
+      <div class="field"><label>Subject Name</label><input type="text" id="s-subject"></div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Subject Code</label><input type="text" id="s-code" placeholder="e.g. MAT101"></div>
+      <div class="field"><label>Max Marks</label><input type="number" id="s-marks" placeholder="100"></div>
+    </div>
+    <div class="field">
+      <label>Assign To (Examiner)</label>
+      <select id="s-assign">
+        <option value="">— Select Examiner —</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Answer Book (PDF) <span style="color:var(--text3);font-size:11px">Max 900KB</span></label>
+      <div class="upload-zone" id="zone-ansbook" onclick="document.getElementById('file-ansbook').click()">
+        <div>📑 Click to upload Answer Book PDF</div>
+      </div>
+      <input type="file" id="file-ansbook" accept=".pdf" style="display:none" onchange="handlePDF('ansbook',this)">
+    </div>
+    <div class="field">
+      <label>Question Paper (PDF) <span style="color:var(--text3);font-size:11px">Max 900KB</span></label>
+      <div class="upload-zone" id="zone-qp" onclick="document.getElementById('file-qp').click()">
+        <div>📋 Click to upload Question Paper PDF</div>
+      </div>
+      <input type="file" id="file-qp" accept=".pdf" style="display:none" onchange="handlePDF('qp',this)">
+    </div>
+    <div class="field">
+      <label>Marking Scheme (PDF) <span style="color:var(--text3);font-size:11px">Max 900KB</span></label>
+      <div class="upload-zone" id="zone-ms" onclick="document.getElementById('file-ms').click()">
+        <div>📊 Click to upload Marking Scheme PDF</div>
+      </div>
+      <input type="file" id="file-ms" accept=".pdf" style="display:none" onchange="handlePDF('ms',this)">
+    </div>
+
+    <div class="field">
+      <label>Marking Scheme Questions Config</label>
+      <div id="ms-config-area">
+        <p style="font-size:12px;color:var(--text2);margin-bottom:8px">Add questions and steps for stepwise marking</p>
+        <div id="ms-questions-list"></div>
+        <button class="btn btn-ghost btn-sm mt-8" onclick="addMSQuestion()">+ Add Question</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-full mt-16" onclick="saveScript()">💾 Assign Now</button>
+  </div>
+</div>
+
+<!-- ══════════ PDF VIEWER ══════════ -->
+<div id="pdf-viewer-overlay">
+  <div class="pdf-viewer-header">
+    <div>
+      <h3 id="pv-title">Answer Sheet</h3>
+      <div style="font-size:12px;color:var(--text2)" id="pv-meta"></div>
+    </div>
+    <div class="ann-toolbar">
+      <span style="font-size:12px;color:var(--text2)">Annotate:</span>
+      <button class="ann-tool active" id="tool-pen"    onclick="setAnnTool('pen')">✏️ Pen</button>
+      <button class="ann-tool"        id="tool-highlight" onclick="setAnnTool('highlight')">🖊 Highlight</button>
+      <button class="ann-tool"        id="tool-text"   onclick="setAnnTool('text')">T Text</button>
+      <button class="ann-tool"        id="tool-none"   onclick="setAnnTool('none')">🔒 Off</button>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="color-dot selected" style="background:#ef4444" data-color="#ef4444" onclick="setAnnColor(this)"></div>
+      <div class="color-dot" style="background:#22c55e" data-color="#22c55e" onclick="setAnnColor(this)"></div>
+      <div class="color-dot" style="background:#4f9eff" data-color="#4f9eff" onclick="setAnnColor(this)"></div>
+      <div class="color-dot" style="background:#f59e0b" data-color="#f59e0b" onclick="setAnnColor(this)"></div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <select id="ann-size" style="padding:4px 8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;font-size:12px">
+        <option value="2">Thin</option>
+        <option value="4" selected>Normal</option>
+        <option value="8">Thick</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" id="btn-view-qp" onclick="switchPDFView('qp')">📋 QP</button>
+      <button class="btn btn-ghost btn-sm" id="btn-view-ms" onclick="switchPDFView('ms')">📊 MS</button>
+      <button class="btn btn-primary btn-sm" id="btn-view-ans" onclick="switchPDFView('ans')">📑 Answer Book</button>
+      <button class="btn btn-success btn-sm" id="btn-submit-check" onclick="submitChecking()" style="display:none">✅ Submit Checking</button>
+      <button class="btn btn-success btn-sm" id="btn-he-finalise" onclick="heApproveScript()" style="display:none">🏆 Finalise Script</button>
+      <button class="btn btn-ghost btn-sm" onclick="closePDFViewer()">✕ Close</button>
+    </div>
+  </div>
+  <div class="pdf-viewer-body">
+    <div class="pdf-panel" id="pdf-panel">
+      <div class="pdf-canvas-wrap" id="pdf-canvas-wrap"></div>
+    </div>
+    <div class="marking-sidebar" id="marking-sidebar" style="display:none">
+      <div class="ms-header">📝 Marks Entry</div>
+      <div class="ms-body">
+        <div class="finalised-banner" id="finalised-banner" style="display:none">✅ Script Finalised</div>
+        <div class="total-box">
+          <div class="total-val" id="total-marks-val">0</div>
+          <div class="total-max" id="total-marks-max">/ 0 Marks</div>
+        </div>
+        <div id="marking-questions"></div>
+        <div class="field remarks-field mt-12">
+          <label>Remarks</label>
+          <textarea id="marking-remarks" placeholder="Overall remarks for this script..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase Compat SDKs — loaded at end of body so DOM is ready -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- pdfjs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script>
+// ── Wait for everything to be ready ──
+window.addEventListener('load', function() {
+
+// ── Firebase Config ──
+const firebaseConfig = {
+  apiKey: "AIzaSyBVnCTGykGMvvIbosdk-E6Suftql2-VDKs",
+  authDomain: "evaluation-portal-58c2d.firebaseapp.com",
+  projectId: "evaluation-portal-58c2d",
+  storageBucket: "evaluation-portal-58c2d.firebasestorage.app",
+  messagingSenderId: "664189269294",
+  appId: "1:664189269294:web:0ce2968fe108701d4736bf"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// Sign out on every page load so no cached session persists
+auth.signOut().catch(() => {});
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ── State ──
+let currentUser = null;
+let currentRole = null;
+let currentScriptId = null;
+let currentScriptData = null;
+let currentPDFType = 'ans';
+let annTool = 'pen';
+let annColor = '#ef4444';
+let annSize = 4;
+let isDrawing = false;
+let annotations = {};
+let msConfig = [];
+let pdfDocs = {};
+let pdfPages = {};
+let pdfBase64 = {};
+
+// ── CAPTCHA ──
+const captchaState = {};
+function genCaptcha(id) {
+  const a = Math.floor(Math.random()*9)+1;
+  const b = Math.floor(Math.random()*9)+1;
+  captchaState[id] = a + b;
+  const el = document.getElementById(id + '-captcha-q');
+  if (el) el.textContent = `${a} + ${b} = ?`;
+  const inp = document.getElementById(id + '-captcha-ans');
+  if (inp) inp.value = '';
+}
+window.refreshCaptcha = function(id) { genCaptcha(id); }
+function checkCaptcha(id) {
+  const inp = document.getElementById(id + '-captcha-ans');
+  if (!inp) return true; // no captcha = pass
+  return parseInt(inp.value) === captchaState[id];
+}
+// Init all captchas
+genCaptcha('he'); genCaptcha('exl'); genCaptcha('exs');
+
+// ── Toast ──
+function toast(msg, type='info') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ── Screen management ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function openHEModal() { genCaptcha('he'); openModal('modal-he'); }
+function openExaminerModal(tab) {
+  genCaptcha('exl'); genCaptcha('exs');
+  openModal('modal-examiner');
+  switchTab('ex', tab);
+}
+function switchTab(prefix, tab) {
+  document.querySelectorAll(`#modal-examiner .modal-tab`).forEach((t,i) => {
+    t.classList.toggle('active', (i===0 && tab==='login') || (i===1 && tab==='signup'));
+  });
+  document.getElementById(`${prefix}-tab-login`).classList.toggle('active', tab==='login');
+  document.getElementById(`${prefix}-tab-signup`).classList.toggle('active', tab==='signup');
+}
+
+// ── HE Login ──
+async function heLogin() {
+  const email = document.getElementById('he-email').value.trim();
+  const pass  = document.getElementById('he-pass').value;
+  if (!email || !pass) { toast('Enter email and password', 'error'); return; }
+  if (!checkCaptcha('he')) { toast('Wrong CAPTCHA answer', 'error'); genCaptcha('he'); return; }
+  // Only the designated HE email is allowed
+  if (email !== '72virparam@gmail.com') { toast('Access denied — not a registered HE email', 'error'); return; }
+  try {
+    const cred = await auth.signInWithEmailAndPassword(email, pass);
+    const docRef = db.collection('users').doc(cred.user.uid);
+    const doc = await docRef.get();
+    if (!doc.exists) {
+      await docRef.set({ name: 'Head Examiner', email, role: 'he', uid: cred.user.uid });
+    }
+    currentUser = { uid: cred.user.uid, email, name: 'Head Examiner', role: 'he' };
+    currentRole = 'he';
+    closeModal('modal-he');
+    loadHEDashboard();
+    showScreen('he');
+    toast('Welcome, Head Examiner!', 'success');
+  } catch(e) {
+    // Firebase v9+ compat uses auth/invalid-credential for wrong password AND no user
+    if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') {
+      // Try creating HE account (first time setup)
+      try {
+        const cred2 = await auth.createUserWithEmailAndPassword(email, pass);
+        await db.collection('users').doc(cred2.user.uid).set({
+          name: 'Head Examiner', email, role: 'he', uid: cred2.user.uid
+        });
+        currentUser = { uid: cred2.user.uid, email, name: 'Head Examiner', role: 'he' };
+        currentRole = 'he';
+        closeModal('modal-he');
+        loadHEDashboard();
+        showScreen('he');
+        toast('HE account created & logged in!', 'success');
+      } catch(e2) {
+        if (e2.code === 'auth/email-already-in-use') {
+          toast('Wrong password. Please try again.', 'error');
+        } else {
+          toast(e2.message, 'error');
+        }
+        genCaptcha('he');
+      }
+    } else {
+      toast(e.message, 'error');
+      genCaptcha('he');
+    }
+  }
+}
+
+// ── Examiner Login ──
+async function examinerLogin() {
+  const email = document.getElementById('ex-login-email').value.trim();
+  const pass  = document.getElementById('ex-login-pass').value;
+  if (!email || !pass) { toast('Please enter email and password', 'error'); return; }
+  if (!checkCaptcha('exl')) { toast('Wrong CAPTCHA answer', 'error'); genCaptcha('exl'); return; }
+  try {
+    const cred = await auth.signInWithEmailAndPassword(email, pass);
+    const snap = await db.collection('users').doc(cred.user.uid).get();
+    if (!snap.exists) { await auth.signOut(); toast('Account not found', 'error'); return; }
+    const data = snap.data();
+    if (data.role === 'he') { await auth.signOut(); toast('Use Head Examiner login', 'error'); return; }
+    if (data.status === 'pending')  { await auth.signOut(); showScreen('waiting'); closeModal('modal-examiner'); return; }
+    if (data.status === 'rejected') { await auth.signOut(); toast('Your registration was rejected by the HE', 'error'); return; }
+    if (data.status !== 'approved') { await auth.signOut(); toast('Account not approved yet', 'error'); return; }
+    currentUser = { uid: cred.user.uid, ...data };
+    currentRole = 'examiner';
+    closeModal('modal-examiner');
+    loadExaminerDashboard();
+    showScreen('examiner');
+    toast(`Welcome, ${data.name}!`, 'success');
+  } catch(e) {
+    if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
+      toast('Incorrect email or password', 'error');
+    } else {
+      toast(e.message, 'error');
+    }
+    genCaptcha('exl');
+  }
+}
+
+// ── Examiner Signup ──
+async function examinerSignup() {
+  const name    = document.getElementById('ex-name').value.trim();
+  const email   = document.getElementById('ex-email').value.trim();
+  const pass    = document.getElementById('ex-pass').value;
+  const subject = document.getElementById('ex-subject').value.trim();
+  const empcode = document.getElementById('ex-empcode').value.trim();
+  if (!name||!email||!pass||!subject||!empcode) { toast('Please fill all fields', 'error'); return; }
+  if (pass.length < 6) { toast('Password must be at least 6 characters', 'error'); return; }
+  if (!checkCaptcha('exs')) { toast('Wrong CAPTCHA answer', 'error'); genCaptcha('exs'); return; }
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+    await db.collection('users').doc(cred.user.uid).set({
+      name, email, subject, empcode, role: 'examiner', status: 'pending', uid: cred.user.uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await auth.signOut();
+    closeModal('modal-examiner');
+    showScreen('waiting');
+    toast('Registration submitted! Awaiting HE approval.', 'success');
+  } catch(e) {
+    if (e.code === 'auth/email-already-in-use') {
+      toast('This email is already registered. Try logging in.', 'error');
+    } else {
+      toast(e.message, 'error');
+    }
+    genCaptcha('exs');
+  }
+}
+
+async function logout() {
+  await auth.signOut();
+  currentUser = null; currentRole = null;
+  showScreen('landing');
+}
+
+// ═══════════════════════════════════
+// HE DASHBOARD
+// ═══════════════════════════════════
+function hePage(page) {
+  document.querySelectorAll('#screen-he .page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#screen-he .nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`he-page-${page}`).classList.add('active');
+  document.querySelector(`[data-page="${page}"]`).classList.add('active');
+  if (page === 'approvals') loadApprovals();
+  if (page === 'scripts')   loadHEScripts();
+  if (page === 'examiners') loadExaminersTable();
+  if (page === 'overview')  loadHEOverview();
+}
+
+async function loadHEDashboard() {
+  document.getElementById('he-uname').textContent  = 'Head Examiner';
+  document.getElementById('he-uemail').textContent = currentUser.email;
+  loadHEOverview();
+  watchApprovalBadge();
+}
+
+async function loadHEOverview() {
+  const [usersSnap, scriptsSnap] = await Promise.all([
+    db.collection('users').where('role','==','examiner').get(),
+    db.collection('scripts').get()
+  ]);
+  const total    = usersSnap.size;
+  const approved = usersSnap.docs.filter(d => d.data().status === 'approved').length;
+  const pending  = usersSnap.docs.filter(d => d.data().status === 'pending').length;
+  const scripts  = scriptsSnap.size;
+  const done     = scriptsSnap.docs.filter(d => d.data().status === 'completed' || d.data().status === 'finalised').length;
+
+  document.getElementById('he-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-val text-accent">${total}</div><div class="stat-label">Total Examiners</div></div>
+    <div class="stat-card"><div class="stat-val text-green">${approved}</div><div class="stat-label">Approved Examiners</div></div>
+    <div class="stat-card"><div class="stat-val text-amber">${pending}</div><div class="stat-label">Pending Approvals</div></div>
+    <div class="stat-card"><div class="stat-val text-accent">${scripts}</div><div class="stat-label">Total Scripts</div></div>
+    <div class="stat-card"><div class="stat-val text-green">${done}</div><div class="stat-label">Evaluated Scripts</div></div>
+  `;
+}
+
+function watchApprovalBadge() {
+  db.collection('users').where('role','==','examiner').where('status','==','pending')
+    .onSnapshot(snap => {
+      const cnt = snap.size;
+      const badge = document.getElementById('he-approval-badge');
+      badge.textContent = cnt;
+      badge.style.display = cnt > 0 ? '' : 'none';
+    });
+}
+
+async function loadApprovals() {
+  const snap = await db.collection('users').where('role','==','examiner').get();
+  const list = document.getElementById('approvals-list');
+  const pending = snap.docs.filter(d => d.data().status === 'pending');
+  if (pending.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="ei">✅</div><p>No pending approval requests</p></div>';
+    return;
+  }
+  list.innerHTML = pending.map(doc => {
+    const d = doc.data();
+    return `<div class="approval-card">
+      <div class="avatar">${d.name[0].toUpperCase()}</div>
+      <div class="info">
+        <div class="aname">${d.name}</div>
+        <div class="ameta">${d.email} &nbsp;•&nbsp; ${d.subject} &nbsp;•&nbsp; ${d.empcode}</div>
+      </div>
+      <button class="btn btn-success btn-sm" onclick="approveExaminer('${doc.id}','approve')">✓ Approve</button>
+      <button class="btn btn-danger btn-sm" onclick="approveExaminer('${doc.id}','reject')">✗ Reject</button>
+    </div>`;
+  }).join('');
+}
+
+async function approveExaminer(uid, action) {
+  const status = action === 'approve' ? 'approved' : 'rejected';
+  await db.collection('users').doc(uid).update({ status });
+  toast(action === 'approve' ? 'Examiner approved!' : 'Examiner rejected', action === 'approve' ? 'success' : 'info');
+  loadApprovals();
+}
+
+async function loadExaminersTable() {
+  const snap = await db.collection('users').where('role','==','examiner').get();
+  const tbody = document.getElementById('examiners-table');
+  if (snap.empty) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text2)">No examiners registered</td></tr>'; return; }
+  tbody.innerHTML = snap.docs.map(doc => {
+    const d = doc.data();
+    const badge = d.status === 'approved' ? 'badge-approved' : d.status === 'rejected' ? 'badge-rejected' : 'badge-pending';
+    return `<tr>
+      <td>${d.name}</td>
+      <td style="font-size:12px">${d.email}</td>
+      <td>${d.subject||'—'}</td>
+      <td><code style="font-size:11px;color:var(--text2)">${d.empcode||'—'}</code></td>
+      <td><span class="badge ${badge}">${d.status}</span></td>
+      <td>
+        ${d.status!=='approved'?`<button class="btn btn-success btn-sm" onclick="approveExaminer('${doc.id}','approve')">✓ Approve</button>`:''}
+        ${d.status!=='rejected'?`<button class="btn btn-danger btn-sm" onclick="approveExaminer('${doc.id}','reject')">✗ Reject</button>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Appoint HE ──
+async function appointHE() {
+  const name  = document.getElementById('appoint-name').value.trim();
+  const email = document.getElementById('appoint-email').value.trim();
+  const pass  = document.getElementById('appoint-pass').value;
+  if (!name||!email||!pass) { toast('Fill all fields', 'error'); return; }
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+    await db.collection('users').doc(cred.user.uid).set({ name, email, role: 'he', uid: cred.user.uid });
+    toast(`${name} appointed as Head Examiner!`, 'success');
+    document.getElementById('appoint-name').value = '';
+    document.getElementById('appoint-email').value = '';
+    document.getElementById('appoint-pass').value = '';
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ═══════════════════════════════════
+// SCRIPT MANAGEMENT
+// ═══════════════════════════════════
+let uploadedPDFs = { ansbook: null, qp: null, ms: null };
+
+async function openAddScript() {
+  uploadedPDFs = { ansbook: null, qp: null, ms: null };
+  msConfig = [];
+  ['ansbook','qp','ms'].forEach(k => {
+    const z = document.getElementById(`zone-${k}`);
+    z.classList.remove('has-file');
+    z.innerHTML = { ansbook:'📑 Click to upload Answer Book PDF', qp:'📋 Click to upload Question Paper PDF', ms:'📊 Click to upload Marking Scheme PDF' }[k];
+  });
+  document.getElementById('ms-questions-list').innerHTML = '';
+  document.getElementById('s-id').value = '';
+  document.getElementById('s-subject').value = '';
+  document.getElementById('s-code').value = '';
+  document.getElementById('s-marks').value = '';
+
+  // populate examiner dropdown
+  const snap = await db.collection('users').where('role','==','examiner').where('status','==','approved').get();
+  const sel  = document.getElementById('s-assign');
+  sel.innerHTML = '<option value="">— Select Examiner —</option>' +
+    snap.docs.map(d => `<option value="${d.id}">${d.data().name} (${d.data().empcode})</option>`).join('');
+  openModal('modal-add-script');
+}
+
+async function handlePDF(key, input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 900 * 1024) { toast('PDF must be under 900KB', 'error'); input.value=''; return; }
+  const b64 = await fileToBase64(file);
+  uploadedPDFs[key] = b64;
+  const zone = document.getElementById(`zone-${key}`);
+  zone.classList.add('has-file');
+  zone.innerHTML = `✅ ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+  toast('PDF loaded!', 'success');
+}
+
+function fileToBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// MS Question builder
+function addMSQuestion() {
+  const idx = msConfig.length;
+  msConfig.push({ q: `Q${idx+1}`, maxMarks: 10, steps: [{label:`Q${idx+1}S1`, max:5}, {label:`Q${idx+1}S2`, max:5}] });
+  renderMSConfig();
+}
+function removeQuestion(idx) { msConfig.splice(idx,1); renderMSConfig(); }
+function addStep(qIdx) {
+  const q = msConfig[qIdx];
+  q.steps.push({ label:`${q.q}S${q.steps.length+1}`, max: 2 });
+  renderMSConfig();
+}
+function renderMSConfig() {
+  const el = document.getElementById('ms-questions-list');
+  el.innerHTML = msConfig.map((q,qi) => `
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px">
+      <div class="flex-between mb-8">
+        <input value="${q.q}" style="background:transparent;border:none;color:var(--text);font-weight:700;font-size:13px;width:80px" onchange="msConfig[${qi}].q=this.value;renderMSConfig()">
+        <div style="display:flex;gap:6px;align-items:center">
+          <span style="font-size:12px;color:var(--text2)">Max:</span>
+          <input type="number" value="${q.maxMarks}" style="width:54px;padding:3px 6px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px" onchange="msConfig[${qi}].maxMarks=+this.value">
+          <button class="btn btn-danger btn-sm" onclick="removeQuestion(${qi})">✕</button>
+        </div>
+      </div>
+      ${q.steps.map((s,si) => `
+        <div class="step-row">
+          <div class="step-dot">●</div>
+          <input value="${s.label}" style="background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px;padding:3px 6px;width:80px;font-family:'DM Mono',monospace" onchange="msConfig[${qi}].steps[${si}].label=this.value">
+          <span style="font-size:11px;color:var(--text2)">Max:</span>
+          <input type="number" value="${s.max}" style="width:50px;padding:3px 6px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px" onchange="msConfig[${qi}].steps[${si}].max=+this.value">
+        </div>
+      `).join('')}
+      <button class="btn btn-ghost btn-sm mt-8" onclick="addStep(${qi})">+ Step</button>
+    </div>
+  `).join('');
+}
+
+async function saveScript() {
+  const sid     = document.getElementById('s-id').value.trim();
+  const subject = document.getElementById('s-subject').value.trim();
+  const code    = document.getElementById('s-code').value.trim();
+  const marks   = parseInt(document.getElementById('s-marks').value);
+  const assignTo = document.getElementById('s-assign').value;
+  if (!sid||!subject||!code||!marks||!assignTo) { toast('Fill all required fields', 'error'); return; }
+  if (!uploadedPDFs.ansbook) { toast('Please upload the Answer Book PDF', 'error'); return; }
+
+  try {
+    const examSnap = await db.collection('users').doc(assignTo).get();
+    const examData = examSnap.data();
+    await db.collection('scripts').add({
+      scriptId: sid, subject, subjectCode: code, maxMarks: marks,
+      assignedTo: assignTo, assignedName: examData.name, assignedEmpCode: examData.empcode,
+      ansbook: uploadedPDFs.ansbook || null,
+      qp: uploadedPDFs.qp || null,
+      ms: uploadedPDFs.ms || null,
+      msConfig: msConfig,
+      status: 'assigned',
+      marksData: {},
+      totalMarks: 0,
+      remarks: '',
+      annotations: {},
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    closeModal('modal-add-script');
+    toast('Script assigned successfully!', 'success');
+    loadHEScripts();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function loadHEScripts() {
+  const snap = await db.collection('scripts').get();
+  const el = document.getElementById('he-scripts-list');
+  if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="ei">📄</div><p>No scripts added yet</p></div>'; return; }
+  el.innerHTML = snap.docs.map(doc => {
+    const d = doc.data();
+    const statusBadge = d.status === 'finalised' ? 'badge-finalised' : d.status === 'completed' ? 'badge-completed' : 'badge-assigned';
+    const finalisedTick = d.status === 'finalised' ? ' ✅' : '';
+    return `<div class="script-card">
+      <div class="script-card-header">
+        <div>
+          <div class="script-title">${d.scriptId} — ${d.subject}${finalisedTick}</div>
+          <div class="script-meta">${d.subjectCode} &nbsp;•&nbsp; Assigned to: <strong>${d.assignedName}</strong> (${d.assignedEmpCode}) &nbsp;•&nbsp; Max: ${d.maxMarks}</div>
+          <div class="mt-4"><span class="badge ${statusBadge}">${d.status}</span> ${d.status==='completed'||d.status==='finalised' ? `<span style="font-size:12px;color:var(--green);margin-left:8px">Total: ${d.totalMarks}/${d.maxMarks}</span>` : ''}</div>
+        </div>
+      </div>
+      <div class="script-actions">
+        <button class="btn btn-primary btn-sm" onclick="openPDFViewer('${doc.id}','he')">🔍 Review Script</button>
+        ${d.status === 'completed' ? `<button class="btn btn-success btn-sm" onclick="heApproveScriptById('${doc.id}')">🏆 Finalise</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════
+// EXAMINER DASHBOARD
+// ═══════════════════════════════════
+function exPage(page) {
+  document.querySelectorAll('#screen-examiner .page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#screen-examiner .nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`ex-page-${page}`).classList.add('active');
+  document.querySelector(`#screen-examiner [data-page="${page}"]`).classList.add('active');
+  if (page === 'scripts')   loadExScripts();
+  if (page === 'completed') loadExCompleted();
+}
+
+async function loadExaminerDashboard() {
+  document.getElementById('ex-uname').textContent  = currentUser.name;
+  document.getElementById('ex-uemail').textContent = currentUser.email;
+  document.getElementById('ex-avatar').textContent = currentUser.name[0].toUpperCase();
+  loadExScripts();
+}
+
+async function loadExScripts() {
+  const snap = await db.collection('scripts').where('assignedTo','==',currentUser.uid).where('status','==','assigned').get();
+  const el = document.getElementById('ex-scripts-list');
+  if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="ei">📭</div><p>No scripts assigned yet</p></div>'; return; }
+  el.innerHTML = snap.docs.map(doc => {
+    const d = doc.data();
+    return `<div class="script-card">
+      <div class="script-card-header">
+        <div>
+          <div class="script-title">${d.scriptId} — ${d.subject}</div>
+          <div class="script-meta">${d.subjectCode} &nbsp;•&nbsp; Max Marks: ${d.maxMarks}</div>
+          <div class="mt-4"><span class="badge badge-assigned">assigned</span></div>
+        </div>
+      </div>
+      <div class="script-actions">
+        <button class="btn btn-primary btn-sm" onclick="openPDFViewer('${doc.id}','examiner')">▶ Begin Checking</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function loadExCompleted() {
+  const snap = await db.collection('scripts').where('assignedTo','==',currentUser.uid).where('status','in',['completed','finalised']).get();
+  const el = document.getElementById('ex-completed-list');
+  if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="ei">✅</div><p>No completed scripts yet</p></div>'; return; }
+  el.innerHTML = snap.docs.map(doc => {
+    const d = doc.data();
+    const fin = d.status === 'finalised' ? ' ✅ <span style="color:var(--green)">FINALISED</span>' : '';
+    return `<div class="script-card">
+      <div class="script-card-header">
+        <div>
+          <div class="script-title">${d.scriptId} — ${d.subject}${fin}</div>
+          <div class="script-meta">${d.subjectCode} &nbsp;•&nbsp; Total: <strong style="color:var(--green)">${d.totalMarks}/${d.maxMarks}</strong></div>
+          <div class="mt-4"><span class="badge ${d.status==='finalised'?'badge-finalised':'badge-completed'}">${d.status}</span></div>
+        </div>
+      </div>
+      <div class="script-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openPDFViewer('${doc.id}','examiner-view')">🔍 View</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════
+// PDF VIEWER
+// ═══════════════════════════════════
+async function openPDFViewer(scriptId, viewerRole) {
+  currentScriptId = scriptId;
+  const snap = await db.collection('scripts').doc(scriptId).get();
+  currentScriptData = { id: scriptId, ...snap.data() };
+  const d = currentScriptData;
+
+  document.getElementById('pv-title').textContent = `${d.scriptId} — ${d.subject}`;
+  document.getElementById('pv-meta').textContent = `${d.subjectCode} • Max: ${d.maxMarks} • Assigned to: ${d.assignedName}`;
+
+  // Show/hide buttons
+  const submitBtn = document.getElementById('btn-submit-check');
+  const finalBtn  = document.getElementById('btn-he-finalise');
+  submitBtn.style.display = (viewerRole==='examiner' && d.status==='assigned') ? '' : 'none';
+  finalBtn.style.display  = (viewerRole==='he' && d.status==='completed') ? '' : 'none';
+
+  // Show marking sidebar for examiner or HE review
+  const sidebar = document.getElementById('marking-sidebar');
+  sidebar.style.display = (viewerRole !== 'examiner-view' || d.status !== 'assigned') ? '' : '';
+  sidebar.style.display = '';
+
+  // Finalised banner
+  const fb = document.getElementById('finalised-banner');
+  fb.style.display = d.status === 'finalised' ? '' : 'none';
+
+  // Render marking questions
+  renderMarkingPanel(d, viewerRole);
+
+  document.getElementById('total-marks-max').textContent = `/ ${d.maxMarks} Marks`;
+  document.getElementById('marking-remarks').value = d.remarks || '';
+  document.getElementById('marking-remarks').disabled = (d.status === 'finalised');
+
+  document.getElementById('pdf-viewer-overlay').classList.add('open');
+
+  // Load PDFs
+  pdfDocs = {}; pdfPages = {};
+  if (d.ansbook) { pdfBase64.ans = d.ansbook; }
+  if (d.qp)      { pdfBase64.qp  = d.qp; }
+  if (d.ms)      { pdfBase64.ms  = d.ms; }
+
+  annotations = d.annotations || { ans:{}, qp:{}, ms:{} };
+  await switchPDFView('ans');
+}
+
+function closePDFViewer() {
+  document.getElementById('pdf-viewer-overlay').classList.remove('open');
+  currentScriptId = null;
+  currentScriptData = null;
+  pdfDocs = {}; pdfBase64 = {};
+}
+
+async function switchPDFView(type) {
+  currentPDFType = type;
+  ['ans','qp','ms'].forEach(t => {
+    const el = document.getElementById(`btn-view-${t==='ans'?'ans':t}`);
+    if(el) el.className = t === type ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  });
+  document.getElementById('btn-view-ans').className = type==='ans' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('btn-view-qp').className  = type==='qp'  ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('btn-view-ms').className  = type==='ms'  ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+
+  const b64 = pdfBase64[type];
+  if (!b64) { document.getElementById('pdf-canvas-wrap').innerHTML = '<div style="color:var(--text2);text-align:center;padding:60px">No PDF uploaded for this section</div>'; return; }
+  await renderPDF(b64, type);
+}
+
+async function renderPDF(base64, type) {
+  const wrap = document.getElementById('pdf-canvas-wrap');
+  wrap.innerHTML = '<div style="color:var(--text2);text-align:center;padding:40px">Loading PDF...</div>';
+  try {
+    const bytes = atob(base64);
+    const arr = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+    const pdfDoc = await pdfjsLib.getDocument({ data: arr }).promise;
+    pdfDocs[type] = pdfDoc;
+    wrap.innerHTML = '';
+    for (let pn = 1; pn <= pdfDoc.numPages; pn++) {
+      const page = await pdfDoc.getPage(pn);
+      const vp   = page.getViewport({ scale: 1.5 });
+      const div  = document.createElement('div');
+      div.className = 'pdf-page-wrap';
+      div.dataset.page = pn;
+      const canvas = document.createElement('canvas');
+      canvas.width  = vp.width;
+      canvas.height = vp.height;
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      // Annotation canvas
+      const annCanvas = document.createElement('canvas');
+      annCanvas.width  = vp.width;
+      annCanvas.height = vp.height;
+      annCanvas.className = 'annotation-layer';
+      annCanvas.dataset.page = pn;
+      annCanvas.dataset.type = type;
+      // Draw saved annotations
+      drawSavedAnnotations(annCanvas, type, pn);
+      setupDrawing(annCanvas);
+      div.appendChild(canvas);
+      div.appendChild(annCanvas);
+      wrap.appendChild(div);
+    }
+  } catch(e) { wrap.innerHTML = `<div style="color:var(--red);padding:40px">${e.message}</div>`; }
+}
+
+// ── Annotation Drawing ──
+function setAnnTool(t) {
+  annTool = t;
+  ['pen','highlight','text','none'].forEach(x => {
+    document.getElementById(`tool-${x}`).classList.toggle('active', x===t);
+  });
+  document.querySelectorAll('.annotation-layer').forEach(c => {
+    c.style.cursor = t === 'none' ? 'default' : 'crosshair';
+    c.style.pointerEvents = t === 'none' ? 'none' : '';
+  });
+}
+function setAnnColor(el) {
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+  annColor = el.dataset.color;
+}
+
+function setupDrawing(canvas) {
+  let drawing = false;
+  let lastX, lastY;
+  const getPos = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    if (e.touches) return { x: (e.touches[0].clientX - rect.left)*scaleX, y: (e.touches[0].clientY - rect.top)*scaleY };
+    return { x: (e.clientX - rect.left)*scaleX, y: (e.clientY - rect.top)*scaleY };
+  };
+  const start = (e) => {
+    if (annTool === 'none') return;
+    e.preventDefault();
+    drawing = true;
+    const pos = getPos(e);
+    lastX = pos.x; lastY = pos.y;
+    if (annTool === 'text') {
+      const text = prompt('Enter text annotation:');
+      if (text) {
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = annColor;
+        ctx.font = '16px DM Sans';
+        ctx.fillText(text, pos.x, pos.y);
+        saveAnnotation(canvas.dataset.type, +canvas.dataset.page, { type:'text', x:pos.x, y:pos.y, text, color:annColor });
+      }
+      drawing = false;
+    }
+  };
+  const draw = (e) => {
+    if (!drawing || annTool === 'none' || annTool === 'text') return;
+    e.preventDefault();
+    const pos = getPos(e);
+    const ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = annTool === 'highlight' ? annColor + '66' : annColor;
+    ctx.lineWidth = annTool === 'highlight' ? +document.getElementById('ann-size').value * 6 : +document.getElementById('ann-size').value;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    lastX = pos.x; lastY = pos.y;
+  };
+  const end = (e) => {
+    if (!drawing) return;
+    drawing = false;
+    // save snapshot
+    if (annTool !== 'text' && annTool !== 'none') {
+      saveAnnotation(canvas.dataset.type, +canvas.dataset.page, { type:'draw', dataURL: canvas.toDataURL() });
+    }
+  };
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, { passive:false });
+  canvas.addEventListener('touchmove', draw, { passive:false });
+  canvas.addEventListener('touchend', end);
+}
+
+function saveAnnotation(type, page, data) {
+  if (!annotations[type]) annotations[type] = {};
+  if (!annotations[type][page]) annotations[type][page] = [];
+  annotations[type][page].push(data);
+  // Auto-save to Firestore
+  db.collection('scripts').doc(currentScriptId).update({ annotations });
+}
+
+function drawSavedAnnotations(canvas, type, page) {
+  const saved = (annotations[type] || {})[page];
+  if (!saved || !saved.length) return;
+  const ctx = canvas.getContext('2d');
+  saved.forEach(a => {
+    if (a.type === 'draw' && a.dataURL) {
+      const img = new Image();
+      img.onload = () => ctx.drawImage(img, 0, 0);
+      img.src = a.dataURL;
+    } else if (a.type === 'text') {
+      ctx.fillStyle = a.color;
+      ctx.font = '16px DM Sans';
+      ctx.fillText(a.text, a.x, a.y);
+    }
+  });
+}
+
+// ── Marking Panel ──
+function renderMarkingPanel(d, viewerRole) {
+  const disabled = d.status === 'finalised' || viewerRole === 'examiner-view';
+  const marksData = d.marksData || {};
+  let total = 0;
+  const config = d.msConfig && d.msConfig.length > 0 ? d.msConfig : [];
+  const el = document.getElementById('marking-questions');
+
+  if (config.length === 0) {
+    el.innerHTML = `<div style="color:var(--text2);font-size:13px">No marking scheme configured for this script. You can still enter total marks below.</div>
+      <div class="field mt-12"><label>Total Marks Awarded</label><input type="number" id="direct-marks" value="${d.totalMarks||0}" min="0" max="${d.maxMarks}" ${disabled?'disabled':''} onchange="updateTotalDirect()"></div>`;
+    document.getElementById('total-marks-val').textContent = d.totalMarks || 0;
+    return;
+  }
+
+  el.innerHTML = config.map((q, qi) => {
+    const qMarks = marksData[q.q] || {};
+    let qSum = 0;
+    const stepsHTML = q.steps.map((s, si) => {
+      const val = qMarks[s.label] || 0;
+      qSum += val;
+      return `<div class="step-row">
+        <div class="step-dot" style="background:var(--green);font-size:9px" title="${s.label}">●</div>
+        <span class="step-label">${s.label}</span>
+        <input type="number" class="step-input" id="step-${qi}-${si}" value="${val}" min="0" max="${s.max}" step="0.5" ${disabled?'disabled':''}
+          onchange="updateStepMark(${qi},${si},'${s.label}','${q.q}',${s.max})">
+        <span style="font-size:11px;color:var(--text3)">/${s.max}</span>
+      </div>`;
+    }).join('');
+    total += qSum;
+    return `<div class="q-section">
+      <div class="q-header"><span>${q.q} <span style="color:var(--text3);font-weight:400">(max ${q.maxMarks})</span></span><span class="q-sum" id="qsum-${qi}">${qSum}</span></div>
+      ${stepsHTML}
+    </div><div class="divider" style="margin:10px 0"></div>`;
+  }).join('');
+
+  document.getElementById('total-marks-val').textContent = total;
+}
+
+function updateStepMark(qi, si, stepLabel, qLabel, max) {
+  const input = document.getElementById(`step-${qi}-${si}`);
+  let val = parseFloat(input.value) || 0;
+  if (val > max) { val = max; input.value = max; }
+  if (val < 0)   { val = 0;   input.value = 0; }
+
+  const config = currentScriptData.msConfig;
+  if (!currentScriptData.marksData) currentScriptData.marksData = {};
+  if (!currentScriptData.marksData[qLabel]) currentScriptData.marksData[qLabel] = {};
+  currentScriptData.marksData[qLabel][stepLabel] = val;
+
+  // Recalc q sum
+  const q = config[qi];
+  let qSum = q.steps.reduce((acc, s) => acc + (currentScriptData.marksData[qLabel][s.label]||0), 0);
+  document.getElementById(`qsum-${qi}`).textContent = qSum;
+
+  // Recalc total
+  let total = 0;
+  config.forEach((qq, qqi) => {
+    const qd = currentScriptData.marksData[qq.q] || {};
+    total += qq.steps.reduce((acc, s) => acc + (qd[s.label]||0), 0);
+  });
+  document.getElementById('total-marks-val').textContent = total;
+  currentScriptData.totalMarks = total;
+}
+
+function updateTotalDirect() {
+  const val = parseInt(document.getElementById('direct-marks').value) || 0;
+  document.getElementById('total-marks-val').textContent = val;
+  currentScriptData.totalMarks = val;
+}
+
+// ── Submit Checking ──
+async function submitChecking() {
+  if (!currentScriptId) return;
+  const remarks = document.getElementById('marking-remarks').value;
+  const total   = currentScriptData.totalMarks || 0;
+  const marksData = currentScriptData.marksData || {};
+
+  if (!confirm(`Submit checking? Total marks: ${total}/${currentScriptData.maxMarks}`)) return;
+
+  await db.collection('scripts').doc(currentScriptId).update({
+    status: 'completed', totalMarks: total, marksData, remarks, annotations,
+    completedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  closePDFViewer();
+  toast('Script checking submitted successfully!', 'success');
+  loadExScripts();
+  exPage('completed');
+}
+
+// ── HE Finalise ──
+async function heApproveScript() {
+  if (!currentScriptId) return;
+  if (!confirm('Finalise this script? This marks it as officially checked and approved.')) return;
+  await db.collection('scripts').doc(currentScriptId).update({ status: 'finalised', finalisedAt: firebase.firestore.FieldValue.serverTimestamp() });
+  closePDFViewer();
+  toast('Script finalised! ✅', 'success');
+  loadHEScripts();
+}
+
+async function heApproveScriptById(scriptId) {
+  await db.collection('scripts').doc(scriptId).update({ status: 'finalised', finalisedAt: firebase.firestore.FieldValue.serverTimestamp() });
+  toast('Script finalised! ✅', 'success');
+  loadHEScripts();
+}
+
+// Auth state — always start fresh, no auto-login
+auth.onAuthStateChanged(user => {
+  // Do nothing — page always starts at landing after signOut on load
+});
+
+// ── Expose all functions to global scope for onclick handlers ──
+window.openHEModal = openHEModal;
+window.openExaminerModal = openExaminerModal;
+window.closeModal = closeModal;
+window.switchTab = switchTab;
+window.heLogin = heLogin;
+window.examinerLogin = examinerLogin;
+window.examinerSignup = examinerSignup;
+window.logout = logout;
+window.hePage = hePage;
+window.exPage = exPage;
+window.openAddScript = openAddScript;
+window.saveScript = saveScript;
+window.handlePDF = handlePDF;
+window.addMSQuestion = addMSQuestion;
+window.removeQuestion = removeQuestion;
+window.addStep = addStep;
+window.approveExaminer = approveExaminer;
+window.appointHE = appointHE;
+window.openPDFViewer = openPDFViewer;
+window.closePDFViewer = closePDFViewer;
+window.switchPDFView = switchPDFView;
+window.setAnnTool = setAnnTool;
+window.setAnnColor = setAnnColor;
+window.submitChecking = submitChecking;
+window.heApproveScript = heApproveScript;
+window.heApproveScriptById = heApproveScriptById;
+window.updateStepMark = updateStepMark;
+window.updateTotalDirect = updateTotalDirect;
+window.refreshCaptcha = refreshCaptcha;
+
+}); // end window.addEventListener('load', ...)
+</script>
 </body>
 </html>
