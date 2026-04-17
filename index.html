@@ -1,183 +1,109 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Doshub</title>
+    <title>Date Sheets</title>
 
     <style>
         body {
             background-color: white !important;
             color: black !important;
-            font-family: monospace;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        .info {
+            font-size: 16px;
+            margin-bottom: 20px;
         }
 
         button {
+            padding: 10px 20px;
             margin: 10px;
-            padding: 8px 15px;
+            border: none;
+            background-color: black;
+            color: white;
             cursor: pointer;
+            border-radius: 5px;
         }
 
-        pre {
+        button:hover {
+            background-color: #333;
+        }
+
+        table {
+            margin: auto;
+            border-collapse: collapse;
+            margin-top: 20px;
             display: none;
-            background: #f5f5f5;
-            padding: 10px;
-            overflow-x: auto;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px 12px;
+        }
+
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 
 <body>
 
-<button onclick="showCode(1)">Code 1</button>
-<button onclick="showCode(2)">Code 2</button>
+<h1>Date Sheets for Even Semester (1st Year)</h1>
 
-<pre id="code1">
-#include &lt;iostream&gt;
-using namespace std;
+<div class="info">
+    Student Name: Naman Sohal <br>
+    UID: 25BAI70141
+</div>
 
-struct Node
-{
-    int data;
-    Node* next;
-};
+<button onclick="showTable(1)">Theory Date Sheet</button>
+<button onclick="showTable(2)">Practical Date Sheet</button>
 
-int main()
-{
-    int n;
-    cin >> n;
+<!-- THEORY TABLE -->
+<table id="table1">
+    <tr>
+        <th>Course Code</th>
+        <th>Course Name</th>
+        <th>Exam Date</th>
+        <th>Exam Timing</th>
+    </tr>
+    <tr><td>25SMT-198</td><td>Mathematics-II</td><td>04 May 2026</td><td>09:30</td></tr>
+    <tr><td>25ECH-101</td><td>Digital Electronics</td><td>06 May 2026</td><td>09:30</td></tr>
+    <tr><td>25SZT-148</td><td>Biology for Engineers</td><td>08 May 2026</td><td>09:30</td></tr>
+    <tr><td>25CSH-103</td><td>Data Structures and Algorithms</td><td>11 May 2026</td><td>09:30</td></tr>
+    <tr><td>25GPT-121</td><td>General Proficiency-1</td><td>16 May 2026</td><td>13:30</td></tr>
+</table>
 
-    Node* head = NULL;
-    Node* newNode;
-    Node* temp;
-
-    for(int i = 0; i < n; i++)
-    {
-        int val;
-        cin >> val;
-
-        newNode = new Node();
-        newNode->data = val;
-        newNode->next = NULL;
-
-        if(head == NULL)
-        {
-            head = newNode;
-        }
-        else
-        {
-            temp = head;
-            while(temp->next != NULL)
-                temp = temp->next;
-
-            temp->next = newNode;
-        }
-    }
-
-    int x, pos;
-    cin >> x >> pos;
-
-    Node* insertNode = new Node();
-    insertNode->data = x;
-    insertNode->next = NULL;
-
-    if(pos < 1)
-    {
-        cout << "Invalid Position";
-        return 0;
-    }
-
-    if(pos == 1)
-    {
-        insertNode->next = head;
-        head = insertNode;
-    }
-    else
-    {
-        temp = head;
-        for(int i = 1; i < pos - 1 && temp != NULL; i++)
-        {
-            temp = temp->next;
-        }
-
-        if(temp == NULL)
-        {
-            cout << "Invalid Position";
-            return 0;
-        }
-
-        insertNode->next = temp->next;
-        temp->next = insertNode;
-    }
-
-    temp = head;
-    while(temp != NULL)
-    {
-        cout << temp->data << " ";
-        temp = temp->next;
-    }
-
-    return 0;
-}
-</pre>
-
-<pre id="code2">
-#include &lt;iostream&gt;
-using namespace std;
-
-class Queue {
-    int arr[100];
-    int front, rear;
-
-public:
-    Queue() {
-        front = 0;
-        rear = -1;
-    }
-
-    void enqueue(int x) {
-        rear++;
-        arr[rear] = x;
-    }
-
-    int dequeue() {
-        int val = arr[front];
-        front++;
-        return val;
-    }
-
-    void display() {
-        for(int i = front; i <= rear; i++) {
-            cout << arr[i] << " ";
-        }
-    }
-};
-
-int main() {
-    int n;
-    cin >> n;
-
-    Queue q;
-
-    for(int i = 0; i < n; i++) {
-        int x;
-        cin >> x;
-        q.enqueue(x);
-    }
-
-    int removed = q.dequeue();
-
-    cout << removed << endl;
-    q.display();
-
-    return 0;
-}
-</pre>
+<!-- PRACTICAL TABLE -->
+<table id="table2">
+    <tr>
+        <th>Course Code</th>
+        <th>Course Name</th>
+        <th>Room No</th>
+        <th>Timing</th>
+        <th>Date</th>
+    </tr>
+    <tr><td>25MEP-102</td><td>Computer Graphics Lab</td><td>407</td><td>11:00–12:30</td><td>25 Apr 2026</td></tr>
+    <tr><td>25ECH-101</td><td>Digital Electronics</td><td>414</td><td>1:30–3:00</td><td>25 Apr 2026</td></tr>
+    <tr><td>25CSP-105</td><td>Programming Practice</td><td>313</td><td>11:00–12:30</td><td>27 Apr 2026</td></tr>
+    <tr><td>25TDP-151</td><td>Soft Skills - I</td><td>304</td><td>9:30–11:00</td><td>27 Apr 2026</td></tr>
+    <tr><td>25ECP-102</td><td>AI Applications Lab</td><td>316</td><td>1:30–3:00</td><td>28 Apr 2026</td></tr>
+    <tr><td>25PCP-111</td><td>Communication Skills-II</td><td>505</td><td>1:30–3:00</td><td>29 Apr 2026</td></tr>
+    <tr><td>25CSH-103</td><td>Data Structures and Algorithms</td><td>507</td><td>3:00–4:30</td><td>29 Apr 2026</td></tr>
+    <tr><td>25CSP-102</td><td>Design Thinking and Innovation</td><td>416</td><td>11:00–12:30</td><td>30 Apr 2026</td></tr>
+</table>
 
 <script>
-function showCode(num) {
-    document.getElementById("code1").style.display = "none";
-    document.getElementById("code2").style.display = "none";
+function showTable(num) {
+    document.getElementById("table1").style.display = "none";
+    document.getElementById("table2").style.display = "none";
 
-    document.getElementById("code" + num).style.display = "block";
+    document.getElementById("table" + num).style.display = "table";
 }
 </script>
 
