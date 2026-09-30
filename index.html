@@ -1,110 +1,625 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Date Sheets</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DSA Programs</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            background-color: white !important;
-            color: black !important;
-            font-family: Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #ffffff;
+            color: #000000;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 45px 0 70px;
+        }
+
+        header {
             text-align: center;
+            margin-bottom: 45px;
         }
 
-        h1 {
-            margin-top: 20px;
+        header h1 {
+            font-size: 42px;
+            margin-bottom: 12px;
+            font-weight: 700;
         }
 
-        .info {
+        header p {
+            font-size: 18px;
+            color: #444444;
+        }
+
+        .program-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 35px;
+        }
+
+        .program-btn {
+            background: #000000;
+            color: #ffffff;
+            border: 2px solid #000000;
+            padding: 13px 28px;
+            border-radius: 8px;
             font-size: 16px;
-            margin-bottom: 20px;
-        }
-
-        button {
-            padding: 10px 20px;
-            margin: 10px;
-            border: none;
-            background-color: black;
-            color: white;
             cursor: pointer;
-            border-radius: 5px;
+            transition: 0.2s;
         }
 
-        button:hover {
-            background-color: #333;
+        .program-btn:hover {
+            background: #ffffff;
+            color: #000000;
         }
 
-        table {
-            margin: auto;
-            border-collapse: collapse;
-            margin-top: 20px;
+        .program-btn.active {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .program {
             display: none;
         }
 
-        th, td {
-            border: 1px solid black;
-            padding: 8px 12px;
+        .program.active {
+            display: block;
         }
 
-        th {
-            background-color: #f2f2f2;
+        .program-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .program-header h2 {
+            font-size: 28px;
+        }
+
+        .program-description {
+            color: #555555;
+            margin-bottom: 18px;
+            font-size: 16px;
+        }
+
+        .sub-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .sub-btn {
+            padding: 10px 18px;
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #000000;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .sub-btn:hover,
+        .sub-btn.active {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .code-container {
+            position: relative;
+            background: #000000;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #000000;
+        }
+
+        .code-top {
+            height: 48px;
+            background: #111111;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+        }
+
+        .code-language {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .copy-btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .copy-btn:hover {
+            background: #dddddd;
+        }
+
+        pre {
+            padding: 25px;
+            overflow-x: auto;
+            color: #ffffff;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre;
+        }
+
+        .code-option {
+            display: none;
+        }
+
+        .code-option.active {
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 25px;
+            border-top: 1px solid #dddddd;
+            color: #555555;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 94%;
+                padding-top: 30px;
+            }
+
+            header h1 {
+                font-size: 30px;
+            }
+
+            header p {
+                font-size: 15px;
+            }
+
+            .program-btn {
+                width: 100%;
+            }
+
+            .program-header h2 {
+                font-size: 24px;
+            }
+
+            pre {
+                font-size: 12px;
+                padding: 18px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<h1>Date Sheets for Even Semester (1st Year)</h1>
+<div class="container">
 
-<div class="info">
-    Student Name: Naman Sohal <br>
-    UID: 25BAI70141
+    <header>
+        <h1>DSA Programs</h1>
+        <p>Data Structures and Algorithms</p>
+    </header>
+
+
+    <!-- MAIN PROGRAM BUTTONS -->
+
+    <div class="program-selector">
+
+        <button class="program-btn active"
+                onclick="showProgram('fibonacci', this)">
+            Fibonacci
+        </button>
+
+        <button class="program-btn"
+                onclick="showProgram('bst', this)">
+            BST
+        </button>
+
+        <button class="program-btn"
+                onclick="showProgram('avl', this)">
+            AVL
+        </button>
+
+    </div>
+
+
+    <!-- ================= FIBONACCI ================= -->
+
+    <section id="fibonacci" class="program active">
+
+        <div class="program-header">
+            <h2>Fibonacci</h2>
+        </div>
+
+        <p class="program-description">
+            Find the Fibonacci number using recursive and iterative approaches.
+        </p>
+
+        <div class="sub-selector">
+
+            <button class="sub-btn active"
+                    onclick="showCode('fibRecursive', this)">
+                Recursive
+            </button>
+
+            <button class="sub-btn"
+                    onclick="showCode('fibIterative', this)">
+                Iterative
+            </button>
+
+        </div>
+
+
+        <!-- RECURSIVE -->
+
+        <div id="fibRecursive" class="code-option active">
+
+            <div class="code-container">
+
+                <div class="code-top">
+                    <span class="code-language">C++</span>
+
+                    <button class="copy-btn"
+                            onclick="copyCode('fibRecursiveCode', this)">
+                        Copy
+                    </button>
+                </div>
+
+                <pre id="fibRecursiveCode">#include &lt;iostream&gt;
+using namespace std;
+
+int fibonacci(int n)
+{
+    if(n &lt;= 1)
+        return n;
+
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+int main()
+{
+    int n;
+
+    cout &lt;&lt; "Enter number: ";
+    cin &gt;&gt; n;
+
+    cout &lt;&lt; "Fibonacci = " &lt;&lt; fibonacci(n);
+
+    return 0;
+}</pre>
+
+            </div>
+
+        </div>
+
+
+        <!-- ITERATIVE -->
+
+        <div id="fibIterative" class="code-option">
+
+            <div class="code-container">
+
+                <div class="code-top">
+                    <span class="code-language">C++</span>
+
+                    <button class="copy-btn"
+                            onclick="copyCode('fibIterativeCode', this)">
+                        Copy
+                    </button>
+                </div>
+
+                <pre id="fibIterativeCode">#include &lt;iostream&gt;
+using namespace std;
+
+int main()
+{
+    int n;
+
+    cout &lt;&lt; "Enter number: ";
+    cin &gt;&gt; n;
+
+    int a = 0;
+    int b = 1;
+
+    if(n == 0)
+    {
+        cout &lt;&lt; a;
+    }
+    else if(n == 1)
+    {
+        cout &lt;&lt; b;
+    }
+    else
+    {
+        for(int i = 2; i &lt;= n; i++)
+        {
+            int c = a + b;
+            a = b;
+            b = c;
+        }
+
+        cout &lt;&lt; b;
+    }
+
+    return 0;
+}</pre>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= BST ================= -->
+
+    <section id="bst" class="program">
+
+        <div class="program-header">
+            <h2>Binary Search Tree</h2>
+        </div>
+
+        <p class="program-description">
+            Search for a value in a Binary Search Tree.
+        </p>
+
+        <div class="code-container">
+
+            <div class="code-top">
+
+                <span class="code-language">C++</span>
+
+                <button class="copy-btn"
+                        onclick="copyCode('bstCode', this)">
+                    Copy
+                </button>
+
+            </div>
+
+            <pre id="bstCode">#include &lt;iostream&gt;
+using namespace std;
+
+struct TreeNode
+{
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+
+    TreeNode(int x)
+    {
+        val = x;
+        left = NULL;
+        right = NULL;
+    }
+};
+
+TreeNode* searchBST(TreeNode* root, int val)
+{
+    if(root == NULL)
+    {
+        return NULL;
+    }
+
+    if(root-&gt;val == val)
+    {
+        return root;
+    }
+    else if(val &lt; root-&gt;val)
+    {
+        return searchBST(root-&gt;left, val);
+    }
+    else
+    {
+        return searchBST(root-&gt;right, val);
+    }
+}
+
+int main()
+{
+    TreeNode *root = new TreeNode(4);
+
+    root-&gt;left = new TreeNode(2);
+    root-&gt;right = new TreeNode(7);
+
+    root-&gt;left-&gt;left = new TreeNode(1);
+    root-&gt;left-&gt;right = new TreeNode(3);
+
+    int val;
+
+    cout &lt;&lt; "Enter value to search: ";
+    cin &gt;&gt; val;
+
+    TreeNode *result = searchBST(root, val);
+
+    if(result != NULL)
+    {
+        cout &lt;&lt; "Node found: " &lt;&lt; result-&gt;val &lt;&lt; endl;
+    }
+    else
+    {
+        cout &lt;&lt; "NULL" &lt;&lt; endl;
+    }
+
+    return 0;
+}</pre>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= AVL ================= -->
+
+    <section id="avl" class="program">
+
+        <div class="program-header">
+            <h2>AVL / Balanced BST</h2>
+        </div>
+
+        <p class="program-description">
+            Balance a Binary Search Tree using inorder traversal and reconstruction.
+        </p>
+
+        <div class="code-container">
+
+            <div class="code-top">
+
+                <span class="code-language">C++</span>
+
+                <button class="copy-btn"
+                        onclick="copyCode('avlCode', this)">
+                    Copy
+                </button>
+
+            </div>
+
+            <pre id="avlCode">class Solution
+{
+public:
+
+    vector&lt;int&gt; arr;
+
+    void inorder(TreeNode* root)
+    {
+        if(root == NULL)
+            return;
+
+        inorder(root-&gt;left);
+
+        arr.push_back(root-&gt;val);
+
+        inorder(root-&gt;right);
+    }
+
+    TreeNode* build(int low, int high)
+    {
+        if(low &gt; high)
+            return NULL;
+
+        int mid = (low + high) / 2;
+
+        TreeNode* root = new TreeNode(arr[mid]);
+
+        root-&gt;left = build(low, mid - 1);
+
+        root-&gt;right = build(mid + 1, high);
+
+        return root;
+    }
+
+    TreeNode* balanceBST(TreeNode* root)
+    {
+        inorder(root);
+
+        return build(0, arr.size() - 1);
+    }
+};</pre>
+
+        </div>
+
+    </section>
+
+
+    <footer>
+        DSA Programs
+    </footer>
+
 </div>
 
-<button onclick="showTable(1)">Theory Date Sheet</button>
-<button onclick="showTable(2)">Practical Date Sheet</button>
-
-<!-- THEORY TABLE -->
-<table id="table1">
-    <tr>
-        <th>Course Code</th>
-        <th>Course Name</th>
-        <th>Exam Date</th>
-        <th>Exam Timing</th>
-    </tr>
-    <tr><td>25SMT-198</td><td>Mathematics-II</td><td>04 May 2026</td><td>09:30</td></tr>
-    <tr><td>25ECH-101</td><td>Digital Electronics</td><td>06 May 2026</td><td>09:30</td></tr>
-    <tr><td>25SZT-148</td><td>Biology for Engineers</td><td>08 May 2026</td><td>09:30</td></tr>
-    <tr><td>25CSH-103</td><td>Data Structures and Algorithms</td><td>11 May 2026</td><td>09:30</td></tr>
-    <tr><td>25GPT-121</td><td>General Proficiency-1</td><td>16 May 2026</td><td>13:30</td></tr>
-</table>
-
-<!-- PRACTICAL TABLE -->
-<table id="table2">
-    <tr>
-        <th>Course Code</th>
-        <th>Course Name</th>
-        <th>Room No</th>
-        <th>Timing</th>
-        <th>Date</th>
-    </tr>
-    <tr><td>25MEP-102</td><td>Computer Graphics Lab</td><td>407</td><td>11:00–12:30</td><td>25 Apr 2026</td></tr>
-    <tr><td>25ECH-101</td><td>Digital Electronics</td><td>414</td><td>1:30–3:00</td><td>25 Apr 2026</td></tr>
-    <tr><td>25CSP-105</td><td>Programming Practice</td><td>313</td><td>11:00–12:30</td><td>27 Apr 2026</td></tr>
-    <tr><td>25TDP-151</td><td>Soft Skills - I</td><td>304</td><td>9:30–11:00</td><td>27 Apr 2026</td></tr>
-    <tr><td>25ECP-102</td><td>AI Applications Lab</td><td>316</td><td>1:30–3:00</td><td>28 Apr 2026</td></tr>
-    <tr><td>25PCP-111</td><td>Communication Skills-II</td><td>505</td><td>1:30–3:00</td><td>29 Apr 2026</td></tr>
-    <tr><td>25CSH-103</td><td>Data Structures and Algorithms</td><td>507</td><td>3:00–4:30</td><td>29 Apr 2026</td></tr>
-    <tr><td>25CSP-102</td><td>Design Thinking and Innovation</td><td>416</td><td>11:00–12:30</td><td>30 Apr 2026</td></tr>
-</table>
 
 <script>
-function showTable(num) {
-    document.getElementById("table1").style.display = "none";
-    document.getElementById("table2").style.display = "none";
 
-    document.getElementById("table" + num).style.display = "table";
-}
+    function showProgram(programId, button)
+    {
+        const programs = document.querySelectorAll(".program");
+
+        programs.forEach(function(program)
+        {
+            program.classList.remove("active");
+        });
+
+        document.getElementById(programId).classList.add("active");
+
+
+        const buttons = document.querySelectorAll(".program-btn");
+
+        buttons.forEach(function(btn)
+        {
+            btn.classList.remove("active");
+        });
+
+        button.classList.add("active");
+    }
+
+
+    function showCode(codeId, button)
+    {
+        const options = button.parentElement
+            .parentElement
+            .querySelectorAll(".code-option");
+
+        options.forEach(function(option)
+        {
+            option.classList.remove("active");
+        });
+
+        document.getElementById(codeId).classList.add("active");
+
+
+        const buttons = button.parentElement
+            .querySelectorAll(".sub-btn");
+
+        buttons.forEach(function(btn)
+        {
+            btn.classList.remove("active");
+        });
+
+        button.classList.add("active");
+    }
+
+
+    function copyCode(codeId, button)
+    {
+        const code = document.getElementById(codeId).innerText;
+
+        navigator.clipboard.writeText(code);
+
+        const oldText = button.innerText;
+
+        button.innerText = "Copied!";
+
+        setTimeout(function()
+        {
+            button.innerText = oldText;
+        }, 1200);
+    }
+
 </script>
 
 </body>
