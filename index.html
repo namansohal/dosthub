@@ -82,14 +82,58 @@
             font-size: 28px;
         }
 
+        .aim {
+            background: #f5f5f5;
+            border-left: 4px solid #000000;
+            padding: 15px 18px;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+
+        .aim strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
         .program-description {
             color: #555555;
             margin-bottom: 18px;
         }
 
+        .mode-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            background: #ffffff;
+            color: #000000;
+            border: 2px solid #000000;
+            padding: 10px 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .mode-btn:hover,
+        .mode-btn.active {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .mode-content {
+            display: none;
+        }
+
+        .mode-content.active {
+            display: block;
+        }
+
         .sub-selector {
             display: flex;
-            justify-content: flex-start;
             gap: 12px;
             flex-wrap: wrap;
             margin-bottom: 18px;
@@ -176,6 +220,27 @@
             white-space: pre;
         }
 
+        .algorithm {
+            background: #f7f7f7;
+            border: 1px solid #cccccc;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .algorithm h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .algorithm ol {
+            padding-left: 25px;
+        }
+
+        .algorithm li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
         .hackerrank {
             margin-top: 75px;
             padding-top: 40px;
@@ -237,7 +302,6 @@
         }
 
         @media (max-width: 600px) {
-
             .container {
                 width: 94%;
                 padding-top: 30px;
@@ -303,7 +367,7 @@
     </div>
 
 
-    <!-- FIBONACCI -->
+    <!-- ================= FIBONACCI ================= -->
 
     <section id="fibonacci" class="program active">
 
@@ -311,43 +375,53 @@
             <h2>Fibonacci</h2>
         </div>
 
-        <p class="program-description">
-            Find the Fibonacci number using recursive and iterative approaches.
-        </p>
+        <div class="aim">
+            <strong>Aim:</strong>
+            To study and implement the Fibonacci sequence using recursive
+            and iterative methods.
+        </div>
 
-        <div class="sub-selector">
+        <div class="mode-selector">
 
-            <button class="sub-btn active"
-                    onclick="showCode('fibRecursive', this)">
-                Recursive
+            <button class="mode-btn active"
+                    onclick="showMode('fibCode', this, 'fibonacci')">
+                Code
             </button>
 
-            <button class="sub-btn"
-                    onclick="showCode('fibIterative', this)">
-                Iterative
+            <button class="mode-btn"
+                    onclick="showMode('fibAlgorithm', this, 'fibonacci')">
+                Algorithm
             </button>
 
         </div>
 
 
-        <!-- FIBONACCI RECURSIVE -->
+        <!-- FIBONACCI CODE -->
 
-        <div id="fibRecursive" class="code-option active">
+        <div id="fibCode" class="mode-content active">
 
-            <div class="code-container">
+            <div class="sub-selector">
 
-                <div class="code-top">
+                <button class="sub-btn active"
+                        onclick="showCode('fibRecursive', this)">
+                    Recursive
+                </button>
 
-                    <span class="code-language">C++</span>
+                <button class="sub-btn"
+                        onclick="showCode('fibIterative', this)">
+                    Iterative
+                </button>
 
-                    <div class="code-actions">
+            </div>
 
-                        <a class="hackerrank-btn"
-                           href="https://www.hackerrank.com/challenges/ctci-fibonacci-numbers/problem"
-                           target="_blank"
-                           rel="noopener noreferrer">
-                            HackerRank ↗
-                        </a>
+
+            <div id="fibRecursive" class="code-option active">
+
+                <div class="code-container">
+
+                    <div class="code-top">
+
+                        <span class="code-language">C++</span>
 
                         <button class="copy-btn"
                                 onclick="copyCode('fibRecursiveCode', this)">
@@ -356,9 +430,7 @@
 
                     </div>
 
-                </div>
-
-                <pre id="fibRecursiveCode">#include &lt;iostream&gt;
+                    <pre id="fibRecursiveCode">#include &lt;iostream&gt;
 using namespace std;
 
 int fibonacci(int n)
@@ -381,29 +453,18 @@ int main()
     return 0;
 }</pre>
 
+                </div>
+
             </div>
 
-        </div>
 
+            <div id="fibIterative" class="code-option">
 
-        <!-- FIBONACCI ITERATIVE -->
+                <div class="code-container">
 
-        <div id="fibIterative" class="code-option">
+                    <div class="code-top">
 
-            <div class="code-container">
-
-                <div class="code-top">
-
-                    <span class="code-language">C++</span>
-
-                    <div class="code-actions">
-
-                        <a class="hackerrank-btn"
-                           href="https://www.hackerrank.com/challenges/ctci-fibonacci-numbers/problem"
-                           target="_blank"
-                           rel="noopener noreferrer">
-                            HackerRank ↗
-                        </a>
+                        <span class="code-language">C++</span>
 
                         <button class="copy-btn"
                                 onclick="copyCode('fibIterativeCode', this)">
@@ -412,9 +473,7 @@ int main()
 
                     </div>
 
-                </div>
-
-                <pre id="fibIterativeCode">#include &lt;iostream&gt;
+                    <pre id="fibIterativeCode">#include &lt;iostream&gt;
 using namespace std;
 
 int main()
@@ -442,7 +501,6 @@ int main()
             int c = a + b;
 
             a = b;
-
             b = c;
         }
 
@@ -452,6 +510,32 @@ int main()
     return 0;
 }</pre>
 
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FIBONACCI ALGORITHM -->
+
+        <div id="fibAlgorithm" class="mode-content">
+
+            <div class="algorithm">
+
+                <h3>Algorithm: Fibonacci</h3>
+
+                <ol>
+                    <li>Start.</li>
+                    <li>Input the value of n.</li>
+                    <li>If n is 0 or 1, return n.</li>
+                    <li>For the recursive method, calculate Fibonacci(n-1) + Fibonacci(n-2).</li>
+                    <li>For the iterative method, initialize the first two values as 0 and 1.</li>
+                    <li>Repeatedly calculate the next value by adding the previous two values.</li>
+                    <li>Display the Fibonacci value.</li>
+                    <li>Stop.</li>
+                </ol>
+
             </div>
 
         </div>
@@ -459,7 +543,7 @@ int main()
     </section>
 
 
-    <!-- BST -->
+    <!-- ================= BST ================= -->
 
     <section id="bst" class="program">
 
@@ -467,143 +551,277 @@ int main()
             <h2>Binary Search Tree</h2>
         </div>
 
-        <p class="program-description">
-            Inorder traversal of a Binary Search Tree.
-        </p>
+        <div class="aim">
 
-        <div class="code-container">
+            <strong>Aim:</strong>
 
-            <div class="code-top">
+            To study the Binary Search Tree (BST) structure and implement
+            search operation using the BST property.
 
-                <span class="code-language">C++</span>
+        </div>
 
-                <div class="code-actions">
+        <div class="mode-selector">
 
-                    <a class="hackerrank-btn"
-                       href="https://www.hackerrank.com/challenges/tree-inorder-traversal/problem"
-                       target="_blank"
-                       rel="noopener noreferrer">
-                        HackerRank ↗
-                    </a>
+            <button class="mode-btn active"
+                    onclick="showMode('bstCode', this, 'bst')">
+                Code
+            </button>
+
+            <button class="mode-btn"
+                    onclick="showMode('bstAlgorithm', this, 'bst')">
+                Algorithm
+            </button>
+
+        </div>
+
+
+        <!-- BST CODE FROM PHOTO -->
+
+        <div id="bstCode" class="mode-content active">
+
+            <div class="code-container">
+
+                <div class="code-top">
+
+                    <span class="code-language">C++</span>
 
                     <button class="copy-btn"
-                            onclick="copyCode('bstCode', this)">
+                            onclick="copyCode('bstPhotoCode', this)">
                         Copy
                     </button>
 
                 </div>
 
-            </div>
+                <pre id="bstPhotoCode">#include &lt;iostream&gt;
+using namespace std;
 
-            <pre id="bstCode">void inOrder(Node *root) 
+struct TreeNode
+{
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+
+    TreeNode(int x)
+    {
+        val = x;
+        left = NULL;
+        right = NULL;
+    }
+};
+
+TreeNode* searchBST(TreeNode* root, int val)
 {
     if(root == NULL)
-        return;
+    {
+        return NULL;
+    }
 
-    inOrder(root-&gt;left);
+    if(root-&gt;val == val)
+    {
+        return root;
+    }
+    else if(val &lt; root-&gt;val)
+    {
+        return searchBST(root-&gt;left, val);
+    }
+    else
+    {
+        return searchBST(root-&gt;right, val);
+    }
+}
 
-    cout &lt;&lt; root-&gt;data &lt;&lt; " ";
+int main()
+{
+    TreeNode *root = new TreeNode(4);
 
-    inOrder(root-&gt;right);
+    root-&gt;left = new TreeNode(2);
+    root-&gt;right = new TreeNode(7);
+
+    root-&gt;left-&gt;left = new TreeNode(1);
+    root-&gt;left-&gt;right = new TreeNode(3);
+
+    int val;
+
+    cout &lt;&lt; "Enter value to search: ";
+    cin &gt;&gt; val;
+
+    TreeNode *result = searchBST(root, val);
+
+    if(result != NULL)
+    {
+        cout &lt;&lt; "Node found: " &lt;&lt; result-&gt;val &lt;&lt; endl;
+    }
+    else
+    {
+        cout &lt;&lt; "NULL" &lt;&lt; endl;
+    }
+
+    return 0;
 }</pre>
+
+            </div>
+
+        </div>
+
+
+        <!-- BST ALGORITHM -->
+
+        <div id="bstAlgorithm" class="mode-content">
+
+            <div class="algorithm">
+
+                <h3>Algorithm: Search in Binary Search Tree</h3>
+
+                <ol>
+                    <li>Start.</li>
+                    <li>Set the root node as the current node.</li>
+                    <li>If the current node is NULL, the value is not found.</li>
+                    <li>If the value is equal to the current node value, the node is found.</li>
+                    <li>If the value is smaller than the current node value, move to the left child.</li>
+                    <li>Otherwise, move to the right child.</li>
+                    <li>Repeat the process until the value is found or the current node becomes NULL.</li>
+                    <li>Stop.</li>
+                </ol>
+
+            </div>
 
         </div>
 
     </section>
 
 
-    <!-- AVL -->
+    <!-- ================= AVL ================= -->
 
     <section id="avl" class="program">
 
         <div class="program-header">
-            <h2>AVL Tree</h2>
+            <h2>AVL / Balanced BST</h2>
         </div>
 
-        <p class="program-description">
-            AVL tree insertion with balancing and rotations.
-        </p>
+        <div class="aim">
 
-        <div class="code-container">
+            <strong>Aim 1:</strong>
 
-            <div class="code-top">
+            To convert an unbalanced Binary Search Tree (BST) into a
+            height-balanced Binary Search Tree while preserving all node values.
 
-                <span class="code-language">C++</span>
+            <br><br>
 
-                <div class="code-actions">
+            <strong>Aim 2:</strong>
 
-                    <a class="hackerrank-btn"
-                       href="https://www.hackerrank.com/challenges/self-balancing-tree/problem"
-                       target="_blank"
-                       rel="noopener noreferrer">
-                        HackerRank ↗
-                    </a>
+            To balance a Binary Search Tree using inorder traversal and
+            reconstruction.
+
+        </div>
+
+        <div class="mode-selector">
+
+            <button class="mode-btn active"
+                    onclick="showMode('avlCode', this, 'avl')">
+                Code
+            </button>
+
+            <button class="mode-btn"
+                    onclick="showMode('avlAlgorithm', this, 'avl')">
+                Algorithm
+            </button>
+
+        </div>
+
+
+        <!-- AVL CODE FROM PHOTO -->
+
+        <div id="avlCode" class="mode-content active">
+
+            <div class="code-container">
+
+                <div class="code-top">
+
+                    <span class="code-language">C++</span>
 
                     <button class="copy-btn"
-                            onclick="copyCode('avlCode', this)">
+                            onclick="copyCode('avlPhotoCode', this)">
                         Copy
                     </button>
 
                 </div>
 
+                <pre id="avlPhotoCode">class Solution
+{
+public:
+
+    vector&lt;int&gt; arr;
+
+    void inorder(TreeNode* root)
+    {
+        if(root == NULL)
+            return;
+
+        inorder(root-&gt;left);
+
+        arr.push_back(root-&gt;val);
+
+        inorder(root-&gt;right);
+    }
+
+    TreeNode* build(int low, int high)
+    {
+        if(low &gt; high)
+            return NULL;
+
+        int mid = (low + high) / 2;
+
+        TreeNode* root = new TreeNode(arr[mid]);
+
+        root-&gt;left = build(low, mid - 1);
+
+        root-&gt;right = build(mid + 1, high);
+
+        return root;
+    }
+
+    TreeNode* balanceBST(TreeNode* root)
+    {
+        inorder(root);
+
+        return build(0, arr.size() - 1);
+    }
+};</pre>
+
             </div>
 
-            <pre id="avlCode">node * insert(node * root, int val)
-{
-    if(root == NULL)
-    {
-        node* temp = new node;
+        </div>
 
-        temp-&gt;val = val;
-        temp-&gt;left = NULL;
-        temp-&gt;right = NULL;
-        temp-&gt;ht = 0;
 
-        return temp;
-    }
+        <!-- AVL ALGORITHM -->
 
-    if(val &lt; root-&gt;val)
-    {
-        root-&gt;left = insert(root-&gt;left, val);
-    }
-    else if(val &gt; root-&gt;val)
-    {
-        root-&gt;right = insert(root-&gt;right, val);
-    }
+        <div id="avlAlgorithm" class="mode-content">
 
-    root-&gt;ht = ht_hidden(root);
+            <div class="algorithm">
 
-    int balance = BF_hidden(root);
+                <h3>Algorithm: Convert Unbalanced BST to Height-Balanced BST</h3>
 
-    if(balance &gt; 1 &amp;&amp; val &lt; root-&gt;left-&gt;val)
-    {
-        return LL_hidden(root);
-    }
+                <ol>
+                    <li>Start.</li>
+                    <li>Perform inorder traversal of the given BST.</li>
+                    <li>Store all node values in an array.</li>
+                    <li>The inorder traversal produces the values in sorted order.</li>
+                    <li>Find the middle element of the array.</li>
+                    <li>Create a new node using the middle element as the root.</li>
+                    <li>Recursively build the left subtree using the left half of the array.</li>
+                    <li>Recursively build the right subtree using the right half of the array.</li>
+                    <li>Return the newly balanced BST.</li>
+                    <li>Stop.</li>
+                </ol>
 
-    if(balance &lt; -1 &amp;&amp; val &gt; root-&gt;right-&gt;val)
-    {
-        return RR_hidden(root);
-    }
-
-    if(balance &gt; 1 &amp;&amp; val &gt; root-&gt;left-&gt;val)
-    {
-        return LR_hidden(root);
-    }
-
-    if(balance &lt; -1 &amp;&amp; val &lt; root-&gt;right-&gt;val)
-    {
-        return RL_hidden(root);
-    }
-
-    return root;
-}</pre>
+            </div>
 
         </div>
 
     </section>
 
 
-    <!-- HACKERRANK SOLUTIONS -->
+    <!-- ================= HACKERRANK ================= -->
 
     <section class="hackerrank">
 
@@ -711,7 +929,7 @@ int main()
 
                 </div>
 
-                <pre id="hrBSTCode">void inOrder(Node *root) 
+                <pre id="hrBSTCode">void inOrder(Node *root)
 {
     if(root == NULL)
         return;
@@ -786,16 +1004,24 @@ int main()
     int balance = BF_hidden(root);
 
     if(balance &gt; 1 &amp;&amp; val &lt; root-&gt;left-&gt;val)
+    {
         return LL_hidden(root);
+    }
 
     if(balance &lt; -1 &amp;&amp; val &gt; root-&gt;right-&gt;val)
+    {
         return RR_hidden(root);
+    }
 
     if(balance &gt; 1 &amp;&amp; val &gt; root-&gt;left-&gt;val)
+    {
         return LR_hidden(root);
+    }
 
     if(balance &lt; -1 &amp;&amp; val &lt; root-&gt;right-&gt;val)
+    {
         return RL_hidden(root);
+    }
 
     return root;
 }</pre>
@@ -846,6 +1072,26 @@ int main()
         document.getElementById(codeId).classList.add("active");
 
         button.parentElement.querySelectorAll(".sub-btn").forEach(function(btn)
+        {
+            btn.classList.remove("active");
+        });
+
+        button.classList.add("active");
+    }
+
+
+    function showMode(modeId, button, programId)
+    {
+        const section = document.getElementById(programId);
+
+        section.querySelectorAll(".mode-content").forEach(function(content)
+        {
+            content.classList.remove("active");
+        });
+
+        document.getElementById(modeId).classList.add("active");
+
+        section.querySelectorAll(".mode-btn").forEach(function(btn)
         {
             btn.classList.remove("active");
         });
