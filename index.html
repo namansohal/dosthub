@@ -23,7 +23,7 @@
         .container {
             width: 92%;
             max-width: 1100px;
-            margin: 0 auto;
+            margin: auto;
             padding: 45px 0 70px;
         }
 
@@ -35,7 +35,6 @@
         header h1 {
             font-size: 42px;
             margin-bottom: 12px;
-            font-weight: 700;
         }
 
         header p {
@@ -46,7 +45,7 @@
         .program-selector {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
             margin-bottom: 35px;
         }
@@ -55,18 +54,13 @@
             background: #000000;
             color: #ffffff;
             border: 2px solid #000000;
-            padding: 13px 28px;
-            border-radius: 8px;
+            padding: 12px 24px;
+            border-radius: 7px;
             font-size: 16px;
             cursor: pointer;
-            transition: 0.2s;
         }
 
-        .program-btn:hover {
-            background: #ffffff;
-            color: #000000;
-        }
-
+        .program-btn:hover,
         .program-btn.active {
             background: #ffffff;
             color: #000000;
@@ -81,12 +75,7 @@
         }
 
         .program-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 18px;
-            gap: 15px;
-            flex-wrap: wrap;
         }
 
         .program-header h2 {
@@ -96,21 +85,21 @@
         .program-description {
             color: #555555;
             margin-bottom: 18px;
-            font-size: 16px;
         }
 
         .sub-selector {
             display: flex;
-            gap: 10px;
-            margin-bottom: 18px;
+            justify-content: flex-start;
+            gap: 12px;
             flex-wrap: wrap;
+            margin-bottom: 18px;
         }
 
         .sub-btn {
-            padding: 10px 18px;
             background: #ffffff;
             color: #000000;
             border: 1px solid #000000;
+            padding: 10px 18px;
             border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
@@ -122,8 +111,15 @@
             color: #ffffff;
         }
 
+        .code-option {
+            display: none;
+        }
+
+        .code-option.active {
+            display: block;
+        }
+
         .code-container {
-            position: relative;
             background: #000000;
             border-radius: 10px;
             overflow: hidden;
@@ -131,13 +127,14 @@
         }
 
         .code-top {
-            height: 48px;
+            min-height: 48px;
             background: #111111;
             color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 15px;
+            padding: 8px 15px;
+            gap: 10px;
         }
 
         .code-language {
@@ -145,7 +142,14 @@
             font-weight: bold;
         }
 
-        .copy-btn {
+        .code-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .copy-btn,
+        .hackerrank-btn {
             background: #ffffff;
             color: #000000;
             border: none;
@@ -154,9 +158,11 @@
             cursor: pointer;
             font-size: 13px;
             font-weight: bold;
+            text-decoration: none;
         }
 
-        .copy-btn:hover {
+        .copy-btn:hover,
+        .hackerrank-btn:hover {
             background: #dddddd;
         }
 
@@ -170,11 +176,54 @@
             white-space: pre;
         }
 
-        .code-option {
+        .hackerrank {
+            margin-top: 75px;
+            padding-top: 40px;
+            border-top: 1px solid #dddddd;
+        }
+
+        .hackerrank-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .hackerrank-header h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .hackerrank-header p {
+            color: #555555;
+        }
+
+        .hr-selector {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+
+        .hr-btn {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #000000;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .hr-btn:hover,
+        .hr-btn.active {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .hr-code {
             display: none;
         }
 
-        .code-option.active {
+        .hr-code.active {
             display: block;
         }
 
@@ -188,6 +237,7 @@
         }
 
         @media (max-width: 600px) {
+
             .container {
                 width: 94%;
                 padding-top: 30px;
@@ -212,6 +262,10 @@
             pre {
                 font-size: 12px;
                 padding: 18px;
+            }
+
+            .code-top {
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -249,7 +303,7 @@
     </div>
 
 
-    <!-- ================= FIBONACCI ================= -->
+    <!-- FIBONACCI -->
 
     <section id="fibonacci" class="program active">
 
@@ -276,19 +330,32 @@
         </div>
 
 
-        <!-- RECURSIVE -->
+        <!-- FIBONACCI RECURSIVE -->
 
         <div id="fibRecursive" class="code-option active">
 
             <div class="code-container">
 
                 <div class="code-top">
+
                     <span class="code-language">C++</span>
 
-                    <button class="copy-btn"
-                            onclick="copyCode('fibRecursiveCode', this)">
-                        Copy
-                    </button>
+                    <div class="code-actions">
+
+                        <a class="hackerrank-btn"
+                           href="https://www.hackerrank.com/challenges/ctci-fibonacci-numbers/problem"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            HackerRank ↗
+                        </a>
+
+                        <button class="copy-btn"
+                                onclick="copyCode('fibRecursiveCode', this)">
+                            Copy
+                        </button>
+
+                    </div>
+
                 </div>
 
                 <pre id="fibRecursiveCode">#include &lt;iostream&gt;
@@ -319,19 +386,32 @@ int main()
         </div>
 
 
-        <!-- ITERATIVE -->
+        <!-- FIBONACCI ITERATIVE -->
 
         <div id="fibIterative" class="code-option">
 
             <div class="code-container">
 
                 <div class="code-top">
+
                     <span class="code-language">C++</span>
 
-                    <button class="copy-btn"
-                            onclick="copyCode('fibIterativeCode', this)">
-                        Copy
-                    </button>
+                    <div class="code-actions">
+
+                        <a class="hackerrank-btn"
+                           href="https://www.hackerrank.com/challenges/ctci-fibonacci-numbers/problem"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            HackerRank ↗
+                        </a>
+
+                        <button class="copy-btn"
+                                onclick="copyCode('fibIterativeCode', this)">
+                            Copy
+                        </button>
+
+                    </div>
+
                 </div>
 
                 <pre id="fibIterativeCode">#include &lt;iostream&gt;
@@ -360,7 +440,9 @@ int main()
         for(int i = 2; i &lt;= n; i++)
         {
             int c = a + b;
+
             a = b;
+
             b = c;
         }
 
@@ -377,7 +459,7 @@ int main()
     </section>
 
 
-    <!-- ================= BST ================= -->
+    <!-- BST -->
 
     <section id="bst" class="program">
 
@@ -386,7 +468,7 @@ int main()
         </div>
 
         <p class="program-description">
-            Search for a value in a Binary Search Tree.
+            Inorder traversal of a Binary Search Tree.
         </p>
 
         <div class="code-container">
@@ -395,78 +477,34 @@ int main()
 
                 <span class="code-language">C++</span>
 
-                <button class="copy-btn"
-                        onclick="copyCode('bstCode', this)">
-                    Copy
-                </button>
+                <div class="code-actions">
+
+                    <a class="hackerrank-btn"
+                       href="https://www.hackerrank.com/challenges/tree-inorder-traversal/problem"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        HackerRank ↗
+                    </a>
+
+                    <button class="copy-btn"
+                            onclick="copyCode('bstCode', this)">
+                        Copy
+                    </button>
+
+                </div>
 
             </div>
 
-            <pre id="bstCode">#include &lt;iostream&gt;
-using namespace std;
-
-struct TreeNode
-{
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-
-    TreeNode(int x)
-    {
-        val = x;
-        left = NULL;
-        right = NULL;
-    }
-};
-
-TreeNode* searchBST(TreeNode* root, int val)
+            <pre id="bstCode">void inOrder(Node *root) 
 {
     if(root == NULL)
-    {
-        return NULL;
-    }
+        return;
 
-    if(root-&gt;val == val)
-    {
-        return root;
-    }
-    else if(val &lt; root-&gt;val)
-    {
-        return searchBST(root-&gt;left, val);
-    }
-    else
-    {
-        return searchBST(root-&gt;right, val);
-    }
-}
+    inOrder(root-&gt;left);
 
-int main()
-{
-    TreeNode *root = new TreeNode(4);
+    cout &lt;&lt; root-&gt;data &lt;&lt; " ";
 
-    root-&gt;left = new TreeNode(2);
-    root-&gt;right = new TreeNode(7);
-
-    root-&gt;left-&gt;left = new TreeNode(1);
-    root-&gt;left-&gt;right = new TreeNode(3);
-
-    int val;
-
-    cout &lt;&lt; "Enter value to search: ";
-    cin &gt;&gt; val;
-
-    TreeNode *result = searchBST(root, val);
-
-    if(result != NULL)
-    {
-        cout &lt;&lt; "Node found: " &lt;&lt; result-&gt;val &lt;&lt; endl;
-    }
-    else
-    {
-        cout &lt;&lt; "NULL" &lt;&lt; endl;
-    }
-
-    return 0;
+    inOrder(root-&gt;right);
 }</pre>
 
         </div>
@@ -474,16 +512,16 @@ int main()
     </section>
 
 
-    <!-- ================= AVL ================= -->
+    <!-- AVL -->
 
     <section id="avl" class="program">
 
         <div class="program-header">
-            <h2>AVL / Balanced BST</h2>
+            <h2>AVL Tree</h2>
         </div>
 
         <p class="program-description">
-            Balance a Binary Search Tree using inorder traversal and reconstruction.
+            AVL tree insertion with balancing and rotations.
         </p>
 
         <div class="code-container">
@@ -492,54 +530,277 @@ int main()
 
                 <span class="code-language">C++</span>
 
-                <button class="copy-btn"
-                        onclick="copyCode('avlCode', this)">
-                    Copy
-                </button>
+                <div class="code-actions">
+
+                    <a class="hackerrank-btn"
+                       href="https://www.hackerrank.com/challenges/self-balancing-tree/problem"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        HackerRank ↗
+                    </a>
+
+                    <button class="copy-btn"
+                            onclick="copyCode('avlCode', this)">
+                        Copy
+                    </button>
+
+                </div>
 
             </div>
 
-            <pre id="avlCode">class Solution
+            <pre id="avlCode">node * insert(node * root, int val)
 {
-public:
-
-    vector&lt;int&gt; arr;
-
-    void inorder(TreeNode* root)
+    if(root == NULL)
     {
-        if(root == NULL)
-            return;
+        node* temp = new node;
 
-        inorder(root-&gt;left);
+        temp-&gt;val = val;
+        temp-&gt;left = NULL;
+        temp-&gt;right = NULL;
+        temp-&gt;ht = 0;
 
-        arr.push_back(root-&gt;val);
-
-        inorder(root-&gt;right);
+        return temp;
     }
 
-    TreeNode* build(int low, int high)
+    if(val &lt; root-&gt;val)
     {
-        if(low &gt; high)
-            return NULL;
-
-        int mid = (low + high) / 2;
-
-        TreeNode* root = new TreeNode(arr[mid]);
-
-        root-&gt;left = build(low, mid - 1);
-
-        root-&gt;right = build(mid + 1, high);
-
-        return root;
+        root-&gt;left = insert(root-&gt;left, val);
+    }
+    else if(val &gt; root-&gt;val)
+    {
+        root-&gt;right = insert(root-&gt;right, val);
     }
 
-    TreeNode* balanceBST(TreeNode* root)
-    {
-        inorder(root);
+    root-&gt;ht = ht_hidden(root);
 
-        return build(0, arr.size() - 1);
+    int balance = BF_hidden(root);
+
+    if(balance &gt; 1 &amp;&amp; val &lt; root-&gt;left-&gt;val)
+    {
+        return LL_hidden(root);
     }
-};</pre>
+
+    if(balance &lt; -1 &amp;&amp; val &gt; root-&gt;right-&gt;val)
+    {
+        return RR_hidden(root);
+    }
+
+    if(balance &gt; 1 &amp;&amp; val &gt; root-&gt;left-&gt;val)
+    {
+        return LR_hidden(root);
+    }
+
+    if(balance &lt; -1 &amp;&amp; val &lt; root-&gt;right-&gt;val)
+    {
+        return RL_hidden(root);
+    }
+
+    return root;
+}</pre>
+
+        </div>
+
+    </section>
+
+
+    <!-- HACKERRANK SOLUTIONS -->
+
+    <section class="hackerrank">
+
+        <div class="hackerrank-header">
+
+            <h2>HackerRank Solutions</h2>
+
+            <p>
+                HackerRank versions of the DSA solutions.
+            </p>
+
+        </div>
+
+
+        <div class="hr-selector">
+
+            <button class="hr-btn active"
+                    onclick="showHR('hrFib', this)">
+                Fibonacci
+            </button>
+
+            <button class="hr-btn"
+                    onclick="showHR('hrBST', this)">
+                BST Traversal
+            </button>
+
+            <button class="hr-btn"
+                    onclick="showHR('hrAVL', this)">
+                AVL
+            </button>
+
+        </div>
+
+
+        <!-- HACKERRANK FIBONACCI -->
+
+        <div id="hrFib" class="hr-code active">
+
+            <div class="code-container">
+
+                <div class="code-top">
+
+                    <span class="code-language">
+                        HackerRank C++
+                    </span>
+
+                    <div class="code-actions">
+
+                        <a class="hackerrank-btn"
+                           href="https://www.hackerrank.com/challenges/ctci-fibonacci-numbers/problem"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Open HackerRank ↗
+                        </a>
+
+                        <button class="copy-btn"
+                                onclick="copyCode('hrFibCode', this)">
+                            Copy
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <pre id="hrFibCode">int fibonacci(int n)
+{
+    if(n &lt;= 1)
+        return n;
+
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}</pre>
+
+            </div>
+
+        </div>
+
+
+        <!-- HACKERRANK BST -->
+
+        <div id="hrBST" class="hr-code">
+
+            <div class="code-container">
+
+                <div class="code-top">
+
+                    <span class="code-language">
+                        HackerRank C++
+                    </span>
+
+                    <div class="code-actions">
+
+                        <a class="hackerrank-btn"
+                           href="https://www.hackerrank.com/challenges/tree-inorder-traversal/problem"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Open HackerRank ↗
+                        </a>
+
+                        <button class="copy-btn"
+                                onclick="copyCode('hrBSTCode', this)">
+                            Copy
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <pre id="hrBSTCode">void inOrder(Node *root) 
+{
+    if(root == NULL)
+        return;
+
+    inOrder(root-&gt;left);
+
+    cout &lt;&lt; root-&gt;data &lt;&lt; " ";
+
+    inOrder(root-&gt;right);
+}</pre>
+
+            </div>
+
+        </div>
+
+
+        <!-- HACKERRANK AVL -->
+
+        <div id="hrAVL" class="hr-code">
+
+            <div class="code-container">
+
+                <div class="code-top">
+
+                    <span class="code-language">
+                        HackerRank C++
+                    </span>
+
+                    <div class="code-actions">
+
+                        <a class="hackerrank-btn"
+                           href="https://www.hackerrank.com/challenges/self-balancing-tree/problem"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Open HackerRank ↗
+                        </a>
+
+                        <button class="copy-btn"
+                                onclick="copyCode('hrAVLCode', this)">
+                            Copy
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <pre id="hrAVLCode">node * insert(node * root, int val)
+{
+    if(root == NULL)
+    {
+        node* temp = new node;
+
+        temp-&gt;val = val;
+        temp-&gt;left = NULL;
+        temp-&gt;right = NULL;
+        temp-&gt;ht = 0;
+
+        return temp;
+    }
+
+    if(val &lt; root-&gt;val)
+    {
+        root-&gt;left = insert(root-&gt;left, val);
+    }
+    else if(val &gt; root-&gt;val)
+    {
+        root-&gt;right = insert(root-&gt;right, val);
+    }
+
+    root-&gt;ht = ht_hidden(root);
+
+    int balance = BF_hidden(root);
+
+    if(balance &gt; 1 &amp;&amp; val &lt; root-&gt;left-&gt;val)
+        return LL_hidden(root);
+
+    if(balance &lt; -1 &amp;&amp; val &gt; root-&gt;right-&gt;val)
+        return RR_hidden(root);
+
+    if(balance &gt; 1 &amp;&amp; val &gt; root-&gt;left-&gt;val)
+        return LR_hidden(root);
+
+    if(balance &lt; -1 &amp;&amp; val &lt; root-&gt;right-&gt;val)
+        return RL_hidden(root);
+
+    return root;
+}</pre>
+
+            </div>
 
         </div>
 
@@ -557,19 +818,14 @@ public:
 
     function showProgram(programId, button)
     {
-        const programs = document.querySelectorAll(".program");
-
-        programs.forEach(function(program)
+        document.querySelectorAll(".program").forEach(function(program)
         {
             program.classList.remove("active");
         });
 
         document.getElementById(programId).classList.add("active");
 
-
-        const buttons = document.querySelectorAll(".program-btn");
-
-        buttons.forEach(function(btn)
+        document.querySelectorAll(".program-btn").forEach(function(btn)
         {
             btn.classList.remove("active");
         });
@@ -580,22 +836,34 @@ public:
 
     function showCode(codeId, button)
     {
-        const options = button.parentElement
-            .parentElement
-            .querySelectorAll(".code-option");
+        const section = button.parentElement.parentElement;
 
-        options.forEach(function(option)
+        section.querySelectorAll(".code-option").forEach(function(option)
         {
             option.classList.remove("active");
         });
 
         document.getElementById(codeId).classList.add("active");
 
+        button.parentElement.querySelectorAll(".sub-btn").forEach(function(btn)
+        {
+            btn.classList.remove("active");
+        });
 
-        const buttons = button.parentElement
-            .querySelectorAll(".sub-btn");
+        button.classList.add("active");
+    }
 
-        buttons.forEach(function(btn)
+
+    function showHR(codeId, button)
+    {
+        document.querySelectorAll(".hr-code").forEach(function(code)
+        {
+            code.classList.remove("active");
+        });
+
+        document.getElementById(codeId).classList.add("active");
+
+        document.querySelectorAll(".hr-btn").forEach(function(btn)
         {
             btn.classList.remove("active");
         });
